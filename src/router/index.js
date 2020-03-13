@@ -1,27 +1,91 @@
-import Vue from 'vue'
-import VueRouter from 'vue-router'
-import Home from '../views/Home.vue'
+import Vue from "vue";
+import VueRouter from "vue-router";
 
-Vue.use(VueRouter)
+import store from "../store";
+
+Vue.use(VueRouter);
+
+const Index = () => import("views/index/Index.vue");
+const Login = () => import("views/login/Login.vue");
+const Product = () => import("views/product/Product.vue");
+const Cart = () => import("views/cart/Cart.vue");
+const Register = () => import("views/register/Register.vue");
+const Order = () => import("views/order/Order.vue");
 
 const routes = [
   {
-    path: '/',
-    name: 'Home',
-    component: Home
+    path: "",
+    redirect: "/index"
   },
   {
-    path: '/about',
-    name: 'About',
-    // route level code-splitting
-    // this generates a separate chunk (about.[hash].js) for this route
-    // which is lazy-loaded when the route is visited.
-    component: () => import(/* webpackChunkName: "about" */ '../views/About.vue')
+    path: "/index",
+    name: "index",
+    component: Index
+  },
+  {
+    path: "/login",
+    name: "login",
+    component: Login
+  },
+  {
+    path: "/product/:id",
+    name: "product",
+    component: Product
+  },
+  {
+    path: "/cart",
+    name: "cart",
+    component: Cart,
+    meta: {
+      requiresAuth: true
+    }
+  },
+  {
+    path: "/register",
+    name: "register",
+    component: Register
+  },
+  {
+    path: "/order",
+    name: "order",
+    component: Order,
+    meta: {
+      requiresAuth: true
+    }
   }
-]
+];
 
 const router = new VueRouter({
-  routes
-})
+  routes,
+  mode: "history"
+});
 
-export default router
+router.beforeEach((to, from, next) => {
+  let token = window.localStorage.getItem("token");
+
+  if (to.meta.requiresAuth) {
+    if (token) {
+      store.state.userInfo = JSON.parse(
+        window.localStorage.getItem("userInfo")
+      );
+      next();
+    } else {
+      next({
+        path: "/login"
+        // query: { redirect: to.fullPath }
+      });
+      next();
+    }
+  } else {
+    if (token) {
+      store.state.userInfo = JSON.parse(
+        window.localStorage.getItem("userInfo")
+      );
+      next();
+    } else {
+      next();
+    }
+  }
+});
+
+export default router;

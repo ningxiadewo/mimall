@@ -1,0 +1,9 @@
+export const SET_TOKEN = "setToken"; // 设置并保存token
+export const SET_USERINFO = "setuserInfo"; // 设置保存用户信息
+export const LOGIN_STATUS = "loginStatus"; // 登录状态
+export const ADD_CART = "add_cart"; // 把商品信息保存并添加到购物车
+export const UPDATE_CARTINFO = "update_cartinfo"; // 更新商品信息
+export const REMOVE_CARTITEM = "remove_cartitem"; // 删除某个商品
+export const UPDATE_SELECTED = "update_selected"; // 更新商品选中状态
+export const UPDATE_ALLSELECTED = "update_allselected"; // 更新商品全选状态
+export const REMOVE_CART = "remove_cart"; // 清除购物车
