@@ -4,10 +4,12 @@ export default {
   // 设置token
   [types.SET_TOKEN](state, value) {
     state.token = value;
+    window.localStorage.setItem("token", value); // 存储进 localStroage
   },
   // 设置用户信息
   [types.SET_USERINFO](state, value) {
     state.userInfo = value;
+    window.localStorage.setItem("userInfo", JSON.stringify(value));
   },
   // 设置登录状态
   [types.LOGIN_STATUS](state, bool) {

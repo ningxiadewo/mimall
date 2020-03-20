@@ -10,9 +10,9 @@
         >
           <a :href="/product/ + sub.ID">
             <img :src="sub.imgurl" alt="" />
-            <h3 class="index-title">{{ sub.title }}</h3>
-            <p class="index-desc">{{ sub.desc }}</p>
-            <p class="index-price">{{ sub.price }}元</p>
+            <h3 class="index-title">{{ sub.goods_name }}</h3>
+            <!-- <p class="index-desc">{{ sub.desc }}</p> -->
+            <p class="index-price">{{ sub.low_price }}元</p>
           </a>
         </li>
       </ul>
@@ -44,10 +44,12 @@ export default {
 .index-product-list {
   display: flex;
   justify-content: space-between;
+  overflow: hidden;
 }
 .index-product-list .product-item .product-item-row:nth-child(1),
 .index-product-list .product-item .product-item-row:nth-child(6) {
   margin-left: 0;
+  overflow: hidden;
 }
 .index-product-list .product-item .product-item-row:nth-child(1) img,
 .index-product-list .product-item .product-item-row:nth-child(6) img {

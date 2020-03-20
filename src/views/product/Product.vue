@@ -85,7 +85,7 @@
       @onClose="showMadal = false"
       @onConfirm="$router.replace('/cart')"
     >
-      <span slot="body">加入购物车成功</span>
+      <div slot="body" class="body-text">加入购物车成功</div>
     </modal>
     <nav-footer></nav-footer>
   </div>
@@ -253,7 +253,6 @@ export default {
       this.goodsInfo = res.data;
       // 计算总价格
       this.getPriceTotal();
-      console.log(this.priceTotal);
     }
   },
   destroyed() {
@@ -440,5 +439,9 @@ export default {
   text-align: center;
   color: #fff;
   cursor: pointer;
+}
+#product .body-text {
+  line-height: 40px;
+  margin-bottom: 40px;
 }
 </style>

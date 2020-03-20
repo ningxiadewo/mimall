@@ -62,7 +62,6 @@ const router = new VueRouter({
 
 router.beforeEach((to, from, next) => {
   let token = window.localStorage.getItem("token");
-
   if (to.meta.requiresAuth) {
     if (token) {
       store.state.userInfo = JSON.parse(

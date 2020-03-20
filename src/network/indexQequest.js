@@ -10,3 +10,8 @@ export function getHeaderData() {
     url: "/products/header"
   });
 }
+export function getAllgoods() {
+  return request({
+    url: "/products/getAllgoods"
+  });
+}

@@ -53,6 +53,7 @@
 .index-price {
   color: #ff6700;
   font-size: 14px;
+  margin-top: 20px;
 }
 @font-face {
   font-family: "icomoon";
@@ -64,4 +65,9 @@
   font-weight: normal;
   font-style: normal;
   font-display: block;
+}
+/*模态框文字属性 */
+.modal-body-text {
+  line-height: 40px;
+  margin-bottom: 40px;
 }

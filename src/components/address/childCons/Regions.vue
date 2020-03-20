@@ -16,7 +16,7 @@
           class="option-item fl"
           v-for="(item, index) in option.prov"
           :key="index"
-          @click.stop="enterProv($event)"
+          @click="enterProv($event)"
         >
           {{ item }}
         </li>
@@ -26,7 +26,7 @@
           class="option-item fl"
           v-for="(item, index) in option.region"
           :key="index"
-          @click.stop="enterCity($event)"
+          @click="enterCity($event)"
         >
           {{ item.name }}
         </li>
@@ -71,19 +71,12 @@ export default {
       this.show.props = true;
 
       this.select.prov = e.target.innerText;
-      console.log(this.option.city);
 
       for (let i in this.option.city) {
         if (i == this.select.prov) {
           this.option.region = this.option.city[i];
         }
       }
-
-      console.log(this.option.region);
-
-      // this.option.city.forEach((item, index) => {
-
-      // });
 
       this.show.citys = false;
     },

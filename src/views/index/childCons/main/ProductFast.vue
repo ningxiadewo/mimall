@@ -29,11 +29,11 @@
                 :key="number"
                 class="fast-swiper-row"
               >
-              <a :href="/product/ + sub.ID">
+                <a :href="/product/ + sub.spu_id">
                   <img :src="sub.imgurl" alt="" />
-                  <h3 class="index-title">{{ sub.title }}</h3>
-                  <p class="index-desc">{{ sub.desc }}</p>
-                  <p class="index-price">{{ sub.price }}元</p>
+                  <h3 class="index-title">{{ sub.goods_name }}</h3>
+                  <!-- <p class="index-desc">{{ sub.desc }}</p> -->
+                  <p class="index-price">{{ sub.low_price }}元</p>
                 </a>
               </li>
             </ul>

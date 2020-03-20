@@ -95,7 +95,7 @@
               @onConfirm="remove(item.id, index)"
               @onClose="showModal = false"
             >
-              <div slot="body">确定要从购物车删除吗</div>
+              <div slot="body" class="body-text">确定要从购物车删除吗</div>
             </modal>
           </div>
         </div>
@@ -112,10 +112,10 @@
           </div>
           <div class="section-right fr">
             <span class="total-price"
-              >合计：<i>{{ allPrice }}</i
+              >合计：<i>{{ this.$store.getters.allPrice }}</i
               >元</span
             >
-            <span class="total-btn" @click="buyGoods">去结算</span>
+            <a class="total-btn" @click="buyGoods">去结算</a>
           </div>
         </div>
       </div>
@@ -168,18 +168,6 @@ export default {
         }
       });
       return count;
-    },
-    /**
-     * 计算总价格
-     */
-    allPrice() {
-      let sum = 0;
-      this.goodsList.forEach(item => {
-        if (item.selected) {
-          sum += item.totalPrice;
-        }
-      });
-      return sum;
     }
   },
   methods: {
@@ -268,8 +256,11 @@ export default {
       // 商品全部未选中
       if (arr.length == this.goodsList.length) {
         this.$toach.show("您还未选中商品呢");
+        return;
+      } else {
+        // 商品选中
+        this.$router.replace("order");
       }
-      // 商品全部选中
     }
   },
   created() {
@@ -494,5 +485,9 @@ export default {
   background-color: #ff00dd;
   margin-top: 20px;
   text-align: center;
+}
+#cart .body-text {
+  line-height: 40px;
+  margin-bottom: 40px;
 }
 </style>

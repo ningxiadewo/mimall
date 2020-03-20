@@ -21,5 +21,15 @@ export default {
       return false;
     }
     return flag;
+  },
+  // 计算总价格
+  allPrice(state) {
+    let sum = 0;
+    state.cart.forEach(item => {
+      if (item.selected) {
+        sum += item.totalPrice;
+      }
+    });
+    return sum;
   }
 };

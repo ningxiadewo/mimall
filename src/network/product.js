@@ -2,6 +2,6 @@ import { request } from "./request";
 
 export function getProductData() {
   return request({
-    url: "/products/goodsInfo"
+    url: "/products/getAllProductsSku"
   });
 }

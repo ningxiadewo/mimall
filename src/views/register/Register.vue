@@ -111,6 +111,7 @@
 
 <script>
 import ComHeader from "components/comheader/ComHeader";
+import { registerForm } from "network/register";
 
 export default {
   name: "register",
@@ -260,7 +261,17 @@ export default {
     submitForm(form) {
       this.$refs[form].validate(valid => {
         if (valid) {
-          alert("submit!");
+          alert("可以注册");
+          registerForm(
+            this.form.userName,
+            this.form.pwd,
+            this.form.email,
+            this.form.sex,
+            this.form.qq,
+            this.form.phone
+          ).then(res => {
+            console.log(res);
+          });
         } else {
           this.$toach.show("您的表单输入有误喔");
           return false;

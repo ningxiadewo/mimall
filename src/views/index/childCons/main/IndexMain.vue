@@ -22,7 +22,7 @@
         </div>
         <!-- 产品列表 -->
         <index-product-list
-          :mainProductList="mainProductList.AI"
+          :mainProductList="mainProductList.filter"
         ></index-product-list>
       </div>
 
@@ -42,7 +42,7 @@
         </div>
         <!-- 产品列表 -->
         <index-product-list
-          :mainProductList="mainProductList.ee"
+          :mainProductList="mainProductList.material"
         ></index-product-list>
       </div>
 
@@ -63,7 +63,7 @@
         </div>
         <!-- 产品列表 -->
         <index-product-list
-          :mainProductList="mainProductList.phone"
+          :mainProductList="mainProductList.chemistry"
         ></index-product-list>
       </div>
     </div>

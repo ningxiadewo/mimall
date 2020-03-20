@@ -3,13 +3,13 @@
   <div class="nav-product">
     <ul class="nav-product-col">
       <li
-        class="nav-product-rel"
+        class="nav-product-row"
         v-for="(list, index) in navProductList"
         :key="index"
       >
-        <a :href="/product/ + list.ID">
+        <a class="row-a" :href="/product/ + list.spu_id">
           <img :src="list.imgurl" alt="" />
-          <span>{{ list.title }}</span>
+          {{ list.goods_name }}
         </a>
       </li>
     </ul>
@@ -35,27 +35,33 @@ export default {
   position: absolute;
   left: 243px;
   top: 0;
-  /* width: 1203px; */
+  width: 1203px;
   height: 460px;
   background-color: #fff;
   display: none;
 }
-.nav-product .nav-product-rel {
-  /* float: left; */
+.nav-product .nav-product-row {
+  float: left;
   height: 76px;
   width: 255px;
   line-height: 76px;
 }
-.nav-product .nav-product-rel img {
+.nav-product .nav-product-row img {
   width: 40px;
   height: 40px;
   vertical-align: middle;
   margin-right: 10px;
 }
-.nav-product .nav-product-rel span {
+.nav-product .nav-product-col .nav-product-row .row-a {
+  color: #333;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.nav-product .nav-product-row span {
   color: #333;
 }
-.nav-product .nav-product-rel span:hover {
+.nav-product .nav-product-row span:hover {
   color: #ff6700;
 }
 </style>

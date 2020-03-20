@@ -2,7 +2,7 @@
   <div class="nav-topbar">
     <div class="container">
       <!-- 左边菜单部分 -->
-      <div class="topbar-menu">
+      <!-- <div class="topbar-menu">
         <a href="javaScript:;">小米商城</a>
         <a href="javaScript:;">MIUI</a>
         <a href="javaScript:;">IoT</a>
@@ -13,50 +13,47 @@
         <a href="javaScript:;">企业团购</a>
         <a href="javaScript:;">资质证照</a>
         <a href="javaScript:;">协议规则</a>
-      </div>
+      </div> -->
       <!-- 右边用户部分 -->
-      <div class="topbar-user">
-        <span class="userInfo" v-if="Object.keys(userInfo).length > 0">
-          <a href="javaScript:;">{{ userInfo.user_name }}</a>
-          <div class="children">
-            <ul>
-              <li>
-                <a href="javaScript:;">个人中心</a>
-              </li>
-              <li>
-                <a href="javaScript:;" @click="$store.dispatch('logOut')"
-                  >退出登录</a
-                >
-              </li>
-            </ul>
-          </div>
+      <div class="topbar-info">
+        <a href="/">返回首页</a>
+        <span v-if="Object.keys($store.state.userInfo).length > 0">
+          <a href="javaScript:;">个人中心</a>
+          <a href="javaScript:;">我的订单</a>
         </span>
         <span v-else>
-          <a href="/login">登录</a>
-          <a href="/register">注册</a>
+          <a href="javaScript:;" @click="showModal = true">个人中心</a>
+          <a href="javaScript:;" @click="showModal = true">我的订单</a>
         </span>
-        <a href="javaScript:;">消息通知</a>
-        <a
-          href="/cart"
-          class="user-cart"
-          :class="{ isActive: $store.getters.cartCount != 0 }"
-        >
-          <span class="icon-cart"></span>
-          购物车
-          <span>({{ $store.getters.cartCount }})</span>
-        </a>
       </div>
     </div>
+    <modal
+      :showModal="showModal"
+      :confirmText="'去登录'"
+      @onConfirm="$router.replace('login')"
+      @onClose="showModal = false"
+    >
+      <div slot="body" class="modal-body-text">您还未登录呢</div>
+    </modal>
   </div>
 </template>
 
 <script>
 import { mapState } from "vuex";
+import Modal from "components/Modal";
 
 export default {
   name: "nav-topbar",
   computed: {
     ...mapState(["userInfo", "loginStatus"])
+  },
+  components: {
+    Modal
+  },
+  data() {
+    return {
+      showModal: false
+    };
   }
 };
 </script>
@@ -65,83 +62,34 @@ export default {
 .nav-topbar {
   height: 40px;
   line-height: 40px;
-  background-color: #333;
+  background-color: #fff;
+  border-bottom: 1px solid #f0f0f0;
 }
 .nav-topbar a:hover {
   color: #fff;
 }
 .nav-topbar .container {
-  display: flex;
-  justify-content: space-between;
+  position: relative;
 }
-.nav-topbar .container a {
-  display: inline-block;
-  color: #b0b0b0;
-  margin-left: 18px;
-}
-.nav-topbar .container a:hover {
-  color: #ff6700;
-}
-
-.nav-topbar .topbar-user .user-cart {
-  background-color: #424242;
-  padding-left: 25px;
-  padding-right: 25px;
-}
-.nav-topbar .topbar-user .user-cart:hover {
-  background-color: #ff6700;
-  color: #fff;
-}
-.nav-topbar .icon-cart {
-  display: inline-block;
-  width: 16px;
-  height: 12px;
-  background: url("/imgs/icon-cart.png") no-repeat;
-  background-size: contain;
-  margin-right: 5px;
-}
-.nav-topbar .topbar-user {
+.nav-topbar .topbar-info {
+  position: absolute;
+  right: 0;
+  top: 0;
   height: 40px;
   line-height: 40px;
 }
-.nav-topbar .userInfo {
-  position: relative;
+.nav-topbar .container .topbar-info a {
   display: inline-block;
-  width: 110px;
-  padding: 0;
-  white-space: nowrap;
-  text-align: center;
+  color: #999;
 }
-.nav-topbar .userInfo > a {
-  display: block;
-  width: 100%;
-  margin: 0;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+.nav-topbar .container .topbar-info a:first-child::after {
+  display: inline-block;
+  content: "|";
+  height: 14px;
+  width: 1px;
+  margin: 0 14px;
 }
-.nav-topbar .userInfo:hover .children {
-  height: 80px;
-  opacity: 1;
-}
-.nav-topbar .userInfo .children {
-  position: absolute;
-  background: #fff;
-  text-align: center;
-  width: 100%;
-  box-shadow: 0 2px 10px #ccc;
-  z-index: 11;
-  height: 0;
-  opacity: 0;
-  overflow: hidden;
-  transition: height 0.8s linear;
-}
-.nav-topbar .userInfo .children a {
-  display: block;
-  margin: 0;
-}
-.nav-topbar .userInfo .children a:hover,
-.nav-topbar .topbar-user .isActive {
-  background-color: #ff6700;
-  color: #fff;
+.nav-topbar .container .topbar-info a:hover {
+  color: #ff6700;
 }
 </style>

@@ -11,25 +11,21 @@
         <div class="goods-body">
           <h3 class="title">商品及其优惠卷</h3>
           <ul class="good-list clear-fix">
-            <li class="good-list-item clear-fix">
+            <li
+              class="good-list-item clear-fix"
+              v-for="(item, index) in goodsInfo"
+              :key="index"
+            >
               <div class="fl item-img">
                 <img src="/imgs/nav-img/nav-1.png" alt="" />
               </div>
               <div class="fl item-name">
-                <a href="javaScript:;">小米手环4 NFC版 黑色</a>
+                <a href="javaScript:;">{{ item.name }}</a>
               </div>
-              <div class="fl item-price">2999元 x 3</div>
-              <div class="fl item-total">888元</div>
-            </li>
-            <li class="good-list-item clear-fix">
-              <div class="fl item-img">
-                <img src="/imgs/nav-img/nav-1.png" alt="" />
+              <div class="fl item-price">
+                {{ item.price }}元 x {{ item.counter }}
               </div>
-              <div class="fl item-name">
-                <a href="javaScript:;">小米手环4 NFC版 黑色</a>
-              </div>
-              <div class="fl item-price">2999元 x 3</div>
-              <div class="fl item-total">888元</div>
+              <div class="fl item-total">{{ item.totalPrice }}元</div>
             </li>
           </ul>
         </div>
@@ -50,11 +46,11 @@
           <ul class="fr">
             <li class="item">
               <span class="text">商品件数：</span>
-              <span class="price">30件</span>
+              <span class="price">{{ this.$store.getters.cartCount }}件</span>
             </li>
             <li class="item">
               <span class="text">商品总价：</span>
-              <span class="price">327487元</span>
+              <span class="price">{{ this.$store.getters.allPrice }}元</span>
             </li>
             <li class="item">
               <span class="text">活动优惠：</span>
@@ -70,7 +66,7 @@
             </li>
             <li class="item total-price">
               <span class="text">应付总额：</span>
-              <span class="price">324998元</span>
+              <span class="price">{{ this.$store.getters.allPrice }}元</span>
             </li>
           </ul>
         </div>
@@ -97,6 +93,14 @@ export default {
     ComHeader,
     NavFooter,
     Address
+  },
+  created() {
+    this.goodsInfo = this.$store.state.cart;
+  },
+  data() {
+    return {
+      goodsInfo: []
+    };
   }
 };
 </script>

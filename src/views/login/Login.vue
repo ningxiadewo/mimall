@@ -146,7 +146,7 @@ export default {
               path: "index"
             });
           })
-          .catch(error => {
+          .catch(() => {
             this.tipStyle = {
               display: "block"
             };

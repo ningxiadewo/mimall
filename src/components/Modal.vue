@@ -35,7 +35,7 @@ export default {
   props: {
     title: {
       type: String,
-      default: "标题"
+      default: "提示"
     },
     confirmText: {
       type: String,
