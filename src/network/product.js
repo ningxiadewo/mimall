@@ -1,7 +1,11 @@
 import { request } from "./request";
 
-export function getProductData() {
+export function getProductData(id) {
   return request({
-    url: "/products/getAllProductsSku"
+    url: "/products/getGoodsById",
+    method: "post",
+    data: {
+      spu_id: id
+    }
   });
 }

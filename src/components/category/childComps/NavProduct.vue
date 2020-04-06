@@ -9,7 +9,7 @@
       >
         <a class="row-a" :href="/product/ + list.spu_id">
           <img :src="list.imgurl" alt="" />
-          {{ list.goods_name }}
+          {{ list.title }}
         </a>
       </li>
     </ul>
@@ -33,18 +33,23 @@ export default {
 <style>
 .nav-product {
   position: absolute;
-  left: 243px;
-  top: 0;
-  width: 1203px;
+  left: 242px;
+  top: -1px;
+  width: 1025px;
   height: 460px;
   background-color: #fff;
   display: none;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+  border: 1px solid #e0e0e0;
+  border-left: 0;
+  z-index: 24;
 }
 .nav-product .nav-product-row {
   float: left;
-  height: 76px;
+  height: 42px;
   width: 255px;
   line-height: 76px;
+  padding: 17px 0;
 }
 .nav-product .nav-product-row img {
   width: 40px;
@@ -57,6 +62,9 @@ export default {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+.nav-product .nav-product-col .nav-product-row .row-a:hover {
+  color: var(--color-topic);
 }
 .nav-product .nav-product-row span {
   color: #333;

@@ -1,7 +1,13 @@
 <template>
   <div class="address clear-fix">
     <h3 class="title">收货信息</h3>
-    <div class="address-item" :class="{isActive: currentIndex == index}" v-for="(item, index) in addressInfo" :key="index" @click="currentIndex = index">
+    <div
+      class="address-item"
+      :class="{ isActive: currentIndex == index }"
+      v-for="(item, index) in addressInfo"
+      :key="index"
+      @click="currentIndex = index"
+    >
       <dl>
         <dt>{{ item.name }}</dt>
         <dd>{{ item.tel | changeTel }}</dd>
@@ -262,7 +268,7 @@ export default {
   filters: {
     // 过滤电话号码
     changeTel(value) {
-      return value.replace(value.substr(3, 4), '****');;
+      return value.replace(value.substr(3, 4), "****");
     }
   }
 };
@@ -364,11 +370,11 @@ export default {
   top: 0;
   background-color: #fff;
   font-size: 12px;
-  color: #ff6700;
+  color: var(--color-topic);
 }
 .address .address-write .formActive input,
 .address .address-write .formActive textarea {
-  border-color: #ff6700;
+  border-color: var(--color-topic);
 }
 .address .address-write .long-input {
   width: 100%;
@@ -411,10 +417,10 @@ export default {
   border-style: solid;
 }
 .address .isActive {
-  border-color: #ff6700;
+  border-color: var(--color-topic);
   transition: none;
 }
 .address .isActive:hover {
-  border-color: #ff6700;
+  border-color: var(--color-topic);
 }
 </style>

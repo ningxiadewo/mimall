@@ -8,8 +8,6 @@ export function registerForm(
   user_wechat,
   user_tel
 ) {
-  console.log(user_name);
-
   return request({
     url: "/user/register",
     method: "post",

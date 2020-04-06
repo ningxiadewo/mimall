@@ -1,48 +1,21 @@
 <template>
-  <div class="category">
+  <div class="category" :class="{ hide: isSearchPage }">
     <!-- 左边菜单 -->
-    <div class="nav-menu">
+    <div
+      class="nav-menu"
+      v-if="Object.keys(this.navProductList).length > 0"
+      :class="{ isSearch: isSearchPage }"
+    >
       <ul>
-        <li class="nav-menu-item">
-          <a href="javascript:;">环保节能商品</a>
+        <li class="nav-menu-item" v-for="(item, index) in navMenu" :key="index">
+          <a href="javascript:;" :class="{ showBgc: currentIndex === index }">{{
+            item.name
+          }}</a>
           <nav-product
             class="item-children"
-            :navProductList="navProductList.energy"
-          ></nav-product>
-        </li>
-        <li class="nav-menu-item">
-          <a href="javascript:;">空气净化商品</a>
-          <nav-product
-            class="item-children"
-            :navProductList="navProductList.air"
-          ></nav-product>
-        </li>
-        <li class="nav-menu-item">
-          <a href="javascript:;">过滤设备</a>
-          <nav-product
-            class="item-children"
-            :navProductList="navProductList.filter"
-          ></nav-product>
-        </li>
-        <li class="nav-menu-item">
-          <a href="javascript:;">环保材料</a>
-          <nav-product
-            class="item-children"
-            :navProductList="navProductList.material"
-          ></nav-product>
-        </li>
-        <li class="nav-menu-item">
-          <a href="javascript:;">化学环保商品</a>
-          <nav-product
-            class="item-children"
-            :navProductList="navProductList.chemistry"
-          ></nav-product>
-        </li>
-        <li class="nav-menu-item">
-          <a href="javascript:;">节能清洁</a>
-          <nav-product
-            class="item-children"
-            :navProductList="navProductList.clean"
+            :navProductList="item.children"
+            @mouseenter.native="currentIndex = index"
+            @mouseleave.native="currentIndex = 999"
           ></nav-product>
         </li>
       </ul>
@@ -52,17 +25,65 @@
 
 <script>
 import NavProduct from "./childComps/NavProduct";
+
+import { getCategoryData } from "network/category";
+
 export default {
   name: "category",
   components: {
     NavProduct
   },
-  props: {
-    navProductList: {
-      type: Object,
-      default() {
-        return {};
-      }
+  data() {
+    return {
+      isSearchPage: false,
+      currentIndex: 99,
+      navMenu: [],
+      navProductList: {}
+    };
+  },
+  created() {
+    this.categoryRequest();
+  },
+  mounted() {
+    // 搜索页显示的分类样式
+    if (this.$route.name === "search") {
+      this.isSearchPage = true;
+    } else {
+      this.isSearchPage = false;
+    }
+  },
+  methods: {
+    /**
+     * 网络请求
+     */
+    categoryRequest() {
+      getCategoryData().then(res => {
+        this.navProductList = res.data;
+        this.navMenu = [
+          {
+            name: "环保节能商品",
+            children: this.navProductList.energy
+          },
+          {
+            name: "空气净化商品",
+            children: this.navProductList.air
+          },
+          {
+            name: "过滤设备",
+            children: this.navProductList.filter
+          },
+          {
+            name: "环保材料",
+            children: this.navProductList.meterial
+          },
+          { name: "化学环保商品", children: this.navProductList.chemistry },
+          {
+            name: "节能清洁",
+            children: this.navProductList.clean
+          }
+        ];
+        console.log(this.navProductList);
+      });
     }
   }
 };
@@ -75,7 +96,7 @@ export default {
   height: 460px;
   position: absolute;
   z-index: 9;
-  background: rgba(105, 101, 101, 0.6);
+  background-color: rgba(105, 101, 101, 0.6);
   padding: 20px 0;
   box-sizing: border-box;
 }
@@ -84,16 +105,22 @@ export default {
   line-height: 70px;
 }
 .category .nav-menu .nav-menu-item > a:hover {
-  background-color: #ff6700;
+  background-color: var(--color-topic);
 }
 .category .nav-menu .nav-menu-item a {
   position: relative;
+  display: inline-block;
+  width: 100%;
   font-size: 14px;
   color: #fff;
   height: 42px;
   line-height: 42px;
   padding-left: 30px;
   box-sizing: border-box;
+  transition: all 0.5s;
+}
+.category .nav-menu .nav-menu-item > .showBgc {
+  background-color: var(--color-topic);
 }
 .category .nav-menu .nav-menu-item a::before {
   position: absolute;
@@ -102,12 +129,30 @@ export default {
   content: "";
   width: 16px;
   height: 16px;
-  background: url("/imgs/icon-arrow.png") no-repeat;
+  background: url("~assets/imgs/index/icon-arrow.png") no-repeat;
   background-size: contain;
   transform: translate(0, -50%);
 }
 .category .nav-menu-item a:hover + .item-children,
 .category .nav-menu-item .item-children:hover {
   display: block;
+}
+.category .isSearch {
+  top: 56px;
+  background-color: #fff;
+  border: 1px solid var(--color-topic);
+}
+.category .isSearch .nav-menu-item {
+  text-align: start;
+}
+/* .category .isSearch .nav-menu-item:hover > .item-children {
+  display: block;
+} */
+.category .isSearch .nav-menu-item a {
+  color: #333;
+}
+.category .isSearch .nav-menu-item a:hover,
+.category .isSearch .nav-menu-item .showBgc {
+  color: #fff;
 }
 </style>

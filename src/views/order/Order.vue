@@ -164,7 +164,7 @@ export default {
 }
 #order .item-total {
   padding-left: 260px;
-  color: #ff6700;
+  color: var(--color-topic);
   font-size: 14px;
 }
 #order .method-row {
@@ -178,7 +178,7 @@ export default {
   line-height: 50px;
 }
 #order .method-row span {
-  color: #ff6700;
+  color: var(--color-topic);
   font-size: 14px;
   height: 50px;
   line-height: 50px;
@@ -205,7 +205,7 @@ export default {
 #order .money-box .item .price {
   display: inline-block;
   width: 120px;
-  color: #ff6700;
+  color: var(--color-topic);
   text-align: end;
 }
 #order .money-box .total-price {
@@ -237,6 +237,6 @@ export default {
 }
 #order .btn .to-compute {
   color: #fff;
-  background-color: #ff6700;
+  background-color: var(--color-topic);
 }
 </style>

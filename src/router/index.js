@@ -11,6 +11,7 @@ const Product = () => import("views/product/Product.vue");
 const Cart = () => import("views/cart/Cart.vue");
 const Register = () => import("views/register/Register.vue");
 const Order = () => import("views/order/Order.vue");
+const Search = () => import("views/search/Search.vue");
 
 const routes = [
   {
@@ -52,6 +53,11 @@ const routes = [
     meta: {
       requiresAuth: true
     }
+  },
+  {
+    path: "/search/:searchText",
+    name: "search",
+    component: Search
   }
 ];
 

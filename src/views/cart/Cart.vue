@@ -1,10 +1,12 @@
 <template>
   <div id="cart">
     <!-- 头部 -->
-    <com-header>
+    <nav-header></nav-header>
+    <!-- <com-header>
       <span slot="title-h" class="title-h">我的购物车</span>
       <span slot="title-p" class="title-p">产品以实物为准</span>
-    </com-header>
+    </com-header> -->
+
     <!-- 主要内容 -->
     <div class="cart-main" v-if="showCart">
       <div class="container">
@@ -135,7 +137,7 @@
 </template>
 
 <script>
-import ComHeader from "components/comheader/ComHeader";
+import NavHeader from "components/NavHeader";
 import NavFooter from "components/NavFooter/NavFooter";
 
 import Modal from "components/Modal";
@@ -146,7 +148,7 @@ import * as types from "../../store/mutations.types";
 export default {
   name: "cart",
   components: {
-    ComHeader,
+    NavHeader,
     NavFooter,
     Modal,
     Toach
@@ -466,7 +468,7 @@ export default {
 #cart .empty-left {
   height: 273px;
   width: 500px;
-  background: url("/imgs/cart-empty.png") no-repeat;
+  background: url("~assets/imgs/cart/cart-empty.png") no-repeat;
 }
 #cart .empty-right {
   margin-top: 80px;

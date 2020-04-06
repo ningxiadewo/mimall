@@ -6,8 +6,8 @@
 </template>
 
 <script>
-import NavSizeFooter from "./NavSizeFooter";
-import NavSizeInfo from "./NavSizeInfo";
+import NavSizeFooter from "./childComps/NavSizeFooter";
+import NavSizeInfo from "./childComps/NavSizeInfo";
 export default {
   name: "nav-footer",
   components: {

@@ -1,8 +1,14 @@
+@import "./normalize.css";
 /* 版心 */
 .container {
   width: 1266px;
   margin-left: auto;
   margin-right: auto;
+}
+/* 主题色 */
+:root {
+  --color-topic: #21c804;
+  --color-assist: #00a1d6;
 }
 /* 基本属性 */
 .fl {
@@ -24,24 +30,7 @@
   visibility: hidden;
 }
 
-/* 首页相同属性 */
-.index-big-title {
-  height: 58px;
-  font-size: 22px;
-  color: #666;
-  line-height: 58px;
-  font-weight: normal;
-}
-.index-title {
-  margin: 0 20px 3px;
-  font-size: 14px;
-  font-weight: 400;
-  text-overflow: ellipsis;
-  color: #212121;
-  overflow: hidden;
-  white-space: nowrap;
-}
-.index-desc {
+/* .index-desc {
   height: 18px;
   margin: 0 20px 12px;
   font-size: 12px;
@@ -49,19 +38,14 @@
   color: #b0b0b0;
   overflow: hidden;
   white-space: nowrap;
-}
-.index-price {
-  color: #ff6700;
-  font-size: 14px;
-  margin-top: 20px;
-}
+} */
 @font-face {
   font-family: "icomoon";
-  src: url("/fonts/icomoon.eot?c6x98h");
-  src: url("/fonts/icomoon.eot?c6x98h#iefix") format("embedded-opentype"),
-    url("/fonts/icomoon.ttf?c6x98h") format("truetype"),
-    url("/fonts/icomoon.woff?c6x98h") format("woff"),
-    url("/fonts/icomoon.svg?c6x98h#icomoon") format("svg");
+  src: url("../fonts/icomoon.eot?c6x98h");
+  src: url("../fonts/icomoon.eot?c6x98h#iefix") format("embedded-opentype"),
+    url("../fonts/icomoon.ttf?c6x98h") format("truetype"),
+    url("../fonts/icomoon.woff?c6x98h") format("woff"),
+    url("../fonts/icomoon.svg?c6x98h#icomoon") format("svg");
   font-weight: normal;
   font-style: normal;
   font-display: block;

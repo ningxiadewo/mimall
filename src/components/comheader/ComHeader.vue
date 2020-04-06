@@ -60,7 +60,7 @@ export default {
   height: 100px;
   line-height: 100px;
   position: relative;
-  border-bottom: 2px solid #ff6700;
+  border-bottom: 2px solid var(--color-topic);
 }
 .com-header .container {
   height: 100%;
@@ -70,15 +70,14 @@ export default {
   position: absolute;
   left: 0;
   top: 50%;
-  width: 48px;
+  width: 150px;
   height: 48px;
-  background: url("/imgs/mi-logo.png") no-repeat;
-  background-color: #ff6700;
+  background: url("~assets/imgs/logo.png") no-repeat;
   transform: translate(0, -50%);
 }
 /* 头部插入内容 */
 .com-header .header-title {
-  margin-left: 100px;
+  margin-left: 200px;
 }
 .com-header .topbar-info {
   margin-top: 30px;
@@ -89,7 +88,7 @@ export default {
   font-size: 16px;
 }
 .com-header .topbar-info a:hover {
-  color: #ff6700;
+  color: var(--color-topic);
 }
 .com-header .topbar-info .user-name::after {
   font-family: "icomoon";
@@ -121,7 +120,7 @@ export default {
   background-color: #fff;
 }
 .com-header .topbar-info .user li > a:hover {
-  background-color: #ff6700;
+  background-color: var(--color-topic);
   color: #fff;
 }
 </style>

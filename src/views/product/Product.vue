@@ -1,10 +1,10 @@
 <template>
   <div id="product">
-    <nav-header :HeaderProductList="HeaderProductList"></nav-header>
+    <nav-header></nav-header>
     <!-- 吸顶标题 -->
-    <div class="nav-bar" :class="{ isFixed: isFixed }">
+    <div class="nav-bar" :class="{ isProFixed: isProFixed }">
       <div class="container">
-        <span class="fl">{{ goodsInfo.name }}</span>
+        <span class="fl">{{ goodsInfo.goods_name }}</span>
         <a class="fr" href="javascript:;">用户评价</a>
       </div>
     </div>
@@ -30,22 +30,36 @@
         <div class="product-info fr">
           <div class="wrapper">
             <h2 class="product-name">
-              {{ goodsInfo.name }}
+              {{ goodsInfo.goods_name }}
             </h2>
             <p class="product-desc"></p>
             <div class="product-price">
               <span class="price">{{ goodsInfo.price }}元</span>
             </div>
             <!-- 地址 -->
-            <div class="product-address">
+            <!-- <div class="product-address">
               <span v-for="(item, index) in goodsInfo.place" :key="index">{{
                 item
               }}</span>
+            </div> -->
+            <div class="product-select" v-if="allGoodsInfo.length > 0">
+              <h3 class="title">选择产品</h3>
+              <a
+                href="javaScript:;"
+                class="select-item"
+                v-for="(item, index) in allGoodsInfo"
+                :key="index"
+                :class="{ isSelected: currentIndex === index }"
+                @click="selectProduct(index)"
+              >
+                <span class="name">{{ selectName(item) }}</span>
+                <span class="price">{{ item.price }}</span>
+              </a>
             </div>
             <!-- 库存 -->
             <div class="product-store">
-              <span>商品库存 </span>
-              <span>{{ goodsInfo.storeNum }}件</span>
+              <span>该产品剩余： </span>
+              <span>{{ goodsInfo.stock }} 件</span>
             </div>
             <!-- 数量 -->
             <div class="product-number">
@@ -92,7 +106,7 @@
 </template>
 
 <script>
-import NavHeader from "components/NavHeader/NavHeader";
+import NavHeader from "components/NavHeader";
 
 import "swiper/dist/css/swiper.css";
 import { swiper, swiperSlide } from "vue-awesome-swiper";
@@ -102,7 +116,6 @@ import NavFooter from "components/NavFooter/NavFooter";
 import Modal from "components/Modal";
 
 // 导入首页网络请求
-import { getHeaderData } from "network/indexQequest.js";
 import { getProductData } from "network/product.js";
 
 import * as types from "../../store/mutations.types";
@@ -121,6 +134,7 @@ export default {
       id: this.$route.params.id,
       HeaderProductList: [],
       goodsInfo: {},
+      allGoodsInfo: [],
       swiperOption: {
         autoplay: {
           delay: 3000,
@@ -138,19 +152,15 @@ export default {
         }
       },
       offsetTop: 0, // 吸顶距离头部距离
-      isFixed: false, // 吸顶是否要固定定位
+      isProFixed: false, // 吸顶是否要固定定位
       counter: 1, // 购买数量
       showMadal: false,
-      priceTotal: 0
+      priceTotal: 0,
+      currentIndex: 0 // 当前选择的产品
     };
   },
   created() {
-    getHeaderData().then(res => {
-      this.getHeaderData(res);
-    });
-    getProductData().then(res => {
-      this.getProductData(res);
-    });
+    this.getProductData(this.id);
   },
   mounted() {
     window.addEventListener("scroll", this.initHeight);
@@ -158,14 +168,24 @@ export default {
       this.offsetTop = document.querySelector(".nav-bar").offsetTop;
     });
   },
-  // computed: {
-  //   priceTotal() {
-  //     if (typeof this.counter === "number") {
-  //       return this.goodsInfo.price * this.counter + "元";
-  //     }
-  //   }
-  // },
   methods: {
+    /**
+     * 产品名过滤
+     */
+    selectName(item) {
+      const goodsLength = item.goods_name.length; // 商品名字的长度
+      const curlength = item.sku_name.length; // 产品名字的长度
+      return item.sku_name.substr(goodsLength, curlength - goodsLength);
+    },
+    /**
+     * 选择产品
+     */
+    selectProduct(index) {
+      this.currentIndex = index;
+      this.goodsInfo = this.allGoodsInfo[index];
+      // 计算总价格
+      this.getPriceTotal();
+    },
     /**
      * 标题吸顶判断
      */
@@ -174,14 +194,14 @@ export default {
         window.pageYOffset ||
         document.documentElement.scrollTop ||
         document.body.scrollTop;
-      this.isFixed = scrollHeight > this.offsetTop ? true : false;
+      this.isProFixed = scrollHeight > this.offsetTop ? true : false;
     },
     /**
      * 购买数量
      */
     decrease() {
       this.counter--;
-      if (this.counter <= 1) {
+      if (this.counter < 1) {
         this.$toach.show("商品数量不可以少于1件喔！");
         this.counter = 1;
       }
@@ -189,9 +209,9 @@ export default {
     },
     increment() {
       this.counter++;
-      if (this.counter >= this.goodsInfo.storeNum) {
-        this.$toach.show(`商品数量仅剩${this.goodsInfo.storeNum}件了喔！`);
-        this.counter = this.goodsInfo.storeNum;
+      if (this.counter >= this.goodsInfo.stock) {
+        this.$toach.show(`商品数量仅剩${this.goodsInfo.stock}件了喔！`);
+        this.counter = this.goodsInfo.stock;
       }
       this.getPriceTotal();
     },
@@ -207,11 +227,9 @@ export default {
     checkText() {
       const reg = /^[0-9]{1,}$/;
       if (reg.test(this.counter)) {
-        if (this.counter > this.goodsInfo.storeNum) {
-          this.counter = this.goodsInfo.storeNum;
-          this.$toach.show(
-            `亲！商品仅剩数量${this.goodsInfo.storeNum}件了喔！`
-          );
+        if (this.counter > this.goodsInfo.stock) {
+          this.counter = this.goodsInfo.stock;
+          this.$toach.show(`亲！商品仅剩数量${this.goodsInfo.stock}件了喔！`);
         }
         this.getPriceTotal();
       } else {
@@ -225,19 +243,18 @@ export default {
     addCart() {
       const _this = this;
       const userInfo = this.$store.state.userInfo;
-
       if (Object.keys(userInfo).length <= 0) {
         this.$router.replace("/login");
         return;
       }
       let goods = {
         id: _this.id,
-        name: _this.goodsInfo.name,
+        name: _this.goodsInfo.sku_name,
         counter: _this.counter,
-        img: _this.goodsInfo.productImgList[0],
+        img: "http://39.107.45.210/images/sku_pictures/sku_193.jpg",
         price: _this.goodsInfo.price,
         totalPrice: _this.goodsInfo.price * _this.counter,
-        storeNum: _this.goodsInfo.storeNum,
+        storeNum: _this.goodsInfo.stock,
         selected: true
       };
       this.$store.commit(types.ADD_CART, goods);
@@ -246,17 +263,18 @@ export default {
     /**
      * 网络请求部分
      */
-    getHeaderData(res) {
-      this.HeaderProductList = res.data;
-    },
-    getProductData(res) {
-      this.goodsInfo = res.data;
-      // 计算总价格
-      this.getPriceTotal();
+    getProductData(id) {
+      getProductData(id).then(res => {
+        this.allGoodsInfo = res.data;
+        this.goodsInfo = this.allGoodsInfo[0];
+        // 计算总价格
+        this.getPriceTotal();
+        console.log(res);
+      });
     }
   },
   destroyed() {
-    window.removeEventListener("scroll", this.initHeight, false);
+    window.removeEventListener("scroll", this.initHeight);
   }
 };
 </script>
@@ -279,9 +297,9 @@ export default {
   color: #616161;
 }
 #product .nav-bar > a:hover {
-  color: #ff6700;
+  color: var(--color-topic);
 }
-#product .isFixed {
+#product .isProFixed {
   position: fixed;
   left: 0;
   top: 0;
@@ -330,7 +348,7 @@ export default {
   margin-right: 30px;
 }
 #product .product-img .swiper-pagination-bullet-active {
-  background-color: #ff6700;
+  background-color: var(--color-topic);
 }
 #product .product-info .wrapper > div {
   margin-top: 20px;
@@ -353,34 +371,41 @@ export default {
   text-align: center;
 }
 #product .product-info .price-text {
-  color: #ff6700;
+  color: var(--color-topic);
   font-size: 16px;
 }
-#product .product-info .price {
-  color: #ff6700;
+#product .product-info .product-price > .price {
+  color: var(--color-topic);
   font-size: 24px;
 }
-#product .product-info .product-address {
-  height: 104px;
-  background-color: #fafafa;
-  padding: 0 40px;
-  box-sizing: border-box;
+#product .product-select .title {
+  font-weight: normal;
+  font-size: 18px;
+  margin-bottom: 15px;
+}
+#product .select-item {
+  display: inline-block;
+  height: 40px;
+  padding: 0 20px;
+  line-height: 40px;
+  border: 1px solid #ccc;
+  margin-right: 25px;
   font-size: 16px;
-  line-height: 104px;
+  margin-bottom: 20px;
 }
-#product .product-info .product-address span {
-  margin-right: 10px;
+#product .select-item > .name {
+  color: #212121;
+  margin-right: 30px;
 }
-#product .product-info .product-address::before {
-  font-family: "icomoon";
-  content: "\e947";
+#product .select-item > .price {
+  color: #999;
 }
 #product .product-info .product-store {
   font-size: 16px;
   color: #616161;
 }
 #product .product-info .product-store span:last-child {
-  color: #e47429;
+  color: var(--color-assist);
 }
 #product .product-info .product-number {
   font-size: 16px;
@@ -429,12 +454,12 @@ export default {
 }
 #product .info-bom .total {
   font-size: 30px;
-  color: #ff6700;
+  color: var(--color-topic);
 }
 #product .info-bom .add-cart {
   width: 300px;
   height: 54px;
-  background-color: #ff6700;
+  background-color: var(--color-topic);
   font-size: 20px;
   text-align: center;
   color: #fff;
@@ -443,5 +468,12 @@ export default {
 #product .body-text {
   line-height: 40px;
   margin-bottom: 40px;
+}
+#product .isSelected {
+  border: 1px solid var(--color-topic);
+}
+#product .isSelected .name,
+#product .isSelected .price {
+  color: var(--color-topic);
 }
 </style>

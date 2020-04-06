@@ -5,7 +5,7 @@
       <div class="login-title">
         <div class="login-logo"></div>
         <div class="title-text">
-          <h3>环保商城</h3>
+          <h3>用户登录</h3>
           <p>让每个人都可以享受环保的健康</p>
         </div>
       </div>
@@ -16,13 +16,7 @@
         <div class="wrapper">
           <!-- 切换按钮 -->
           <div class="wrapper-tab">
-            <div class="tab-left">
-              <a href="javascript:;" :class="{ isActive: isShow }">账号登录</a>
-            </div>
-            <span></span>
-            <div class="tab-right">
-              <a href="javascript:;" :class="{ isActive: !isShow }">扫码登录</a>
-            </div>
+            账号登录
           </div>
           <!-- 输入用户信息 -->
           <div class="wrapper-info">
@@ -66,23 +60,22 @@
         </div>
       </div>
     </div>
-    <nav-size-info></nav-size-info>
+    <nav-footer></nav-footer>
   </div>
 </template>
 
 <script>
-import NavSizeInfo from "components/NavFooter/NavSizeInfo";
+import NavFooter from "components/NavFooter/NavFooter";
 
 import login from "network/loginRequest";
 
 export default {
   name: "login",
   components: {
-    NavSizeInfo
+    NavFooter
   },
   data() {
     return {
-      isShow: true,
       userName: "",
       password: "",
       tipStyle: {},
@@ -122,7 +115,7 @@ export default {
           display: "block"
         };
         this.userNameStyle = {
-          borderColor: "#ff6700"
+          borderColor: "#21c804"
         };
         document.querySelector(".tip-text").innerHTML = "请输入账号";
       } else if (this.password === "") {
@@ -130,7 +123,7 @@ export default {
           display: "block"
         };
         this.passwordStyle = {
-          borderColor: "#ff6700"
+          borderColor: "#21c804"
         };
         document.querySelector(".tip-text").innerHTML = "请输入密码";
       } else {
@@ -151,7 +144,7 @@ export default {
               display: "block"
             };
             this.userNameStyle = {
-              borderColor: "#ff6700"
+              borderColor: "var(--color-topic)"
             };
             document.querySelector(".tip-text").innerHTML =
               "账号或密码错误，请重新输入";
@@ -177,11 +170,10 @@ export default {
   box-sizing: border-box;
 }
 .login-title .login-logo {
-  width: 50px;
+  width: 125px;
   height: 50px;
-  background: url("/imgs/mi-logo.png") no-repeat;
+  background: url("~assets/imgs/logo.png") no-repeat;
   background-size: contain;
-  background-color: #ff6700;
   float: left;
 }
 .login-title .title-text {
@@ -198,7 +190,7 @@ export default {
 .login-banner {
   width: auto;
   height: 560px;
-  background: url("/imgs/login/login-bg.jpg") no-repeat;
+  background: url("~assets/imgs/login/login-bg.jpg") no-repeat;
   background-position: 100% 0;
   position: relative;
 }
@@ -212,20 +204,11 @@ export default {
 }
 .login-banner .wrapper-tab {
   height: 82px;
-  padding: 27px 0 24px;
-  display: flex;
+  line-height: 82px;
   box-sizing: border-box;
-  justify-content: space-evenly;
-}
-.login-banner .wrapper-tab a {
-  font-size: 22px;
+  text-align: center;
   color: #666;
-}
-.login-banner .wrapper-tab span {
-  display: inline-block;
-  width: 2px;
-  height: 29px;
-  background-color: #ccc;
+  font-size: 22px;
 }
 .login-banner .wrapper-info {
   padding: 0 32px;
@@ -257,12 +240,16 @@ export default {
   content: "";
   width: 16px;
   height: 16px;
-  background: url(/imgs/pwd-icons-new.png) -104px -49px no-repeat;
+  background: url(~assets/imgs/login/pwd-icons-new.png) -104px -49px no-repeat;
 }
 .login-banner .info-login input {
-  background-color: #ff6700;
+  background-color: var(--color-topic);
   color: #fff;
   cursor: pointer;
+  transition: all 0.5s;
+}
+.login-banner .info-login input:hover {
+  background-color: var(--color-assist);
 }
 .login-banner .wrapper-info .info-other {
   display: flex;
@@ -271,7 +258,7 @@ export default {
 }
 .login-banner .wrapper-info .info-other a {
   font-size: 14px;
-  color: #999;
+  color: var(--color-topic);
   margin-left: 15px;
 }
 .login-banner .wrapper-info .info-other span {
@@ -283,6 +270,6 @@ export default {
 }
 .login-banner .login-info .wrapper a:hover,
 .login-banner .wrapper-tab .isActive {
-  color: #ff6700;
+  color: var(--color-assist);
 }
 </style>
