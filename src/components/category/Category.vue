@@ -31,14 +31,14 @@ import { getCategoryData } from "network/category";
 export default {
   name: "category",
   components: {
-    NavProduct
+    NavProduct,
   },
   data() {
     return {
       isSearchPage: false,
       currentIndex: 99,
       navMenu: [],
-      navProductList: {}
+      navProductList: {},
     };
   },
   created() {
@@ -57,35 +57,35 @@ export default {
      * 网络请求
      */
     categoryRequest() {
-      getCategoryData().then(res => {
+      getCategoryData().then((res) => {
         this.navProductList = res.data;
         this.navMenu = [
           {
             name: "环保节能商品",
-            children: this.navProductList.energy
+            children: this.navProductList.energy,
           },
           {
             name: "空气净化商品",
-            children: this.navProductList.air
+            children: this.navProductList.air,
           },
           {
             name: "过滤设备",
-            children: this.navProductList.filter
+            children: this.navProductList.filter,
           },
           {
             name: "环保材料",
-            children: this.navProductList.meterial
+            children: this.navProductList.meterial,
           },
           { name: "化学环保商品", children: this.navProductList.chemistry },
           {
             name: "节能清洁",
-            children: this.navProductList.clean
-          }
+            children: this.navProductList.clean,
+          },
         ];
         console.log(this.navProductList);
       });
-    }
-  }
+    },
+  },
 };
 </script>
 
@@ -96,7 +96,7 @@ export default {
   height: 460px;
   position: absolute;
   z-index: 9;
-  background-color: rgba(105, 101, 101, 0.6);
+  background-color: rgba(0, 0, 0, 0.15);
   padding: 20px 0;
   box-sizing: border-box;
 }
@@ -138,7 +138,7 @@ export default {
   display: block;
 }
 .category .isSearch {
-  top: 56px;
+  top: 46px;
   background-color: #fff;
   border: 1px solid var(--color-topic);
 }
@@ -148,11 +148,11 @@ export default {
 /* .category .isSearch .nav-menu-item:hover > .item-children {
   display: block;
 } */
-.category .isSearch .nav-menu-item a {
+.category .isSearch .nav-menu-item > a {
   color: #333;
 }
-.category .isSearch .nav-menu-item a:hover,
+.category .isSearch .nav-menu-item > a:hover,
 .category .isSearch .nav-menu-item .showBgc {
-  color: #fff;
+  color: #fff !important;
 }
 </style>

@@ -6,8 +6,10 @@ module.exports = {
         components: "@/components",
         network: "@/network",
         common: "@/common",
-        assets: "@/assets"
-      }
-    }
-  }
+        assets: "@/assets",
+        utils: "@/utils",
+      },
+    },
+  },
+  // publicPath: "./",
 };

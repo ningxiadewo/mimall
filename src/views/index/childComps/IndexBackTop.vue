@@ -1,48 +1,10 @@
 <template>
   <div class="tool-bar" :class="{ showTop: isShowTop }">
-    <!-- <div class="tool-bar-item">
-      <a href="javascript:;">
-        <img src="/imgs/icon-phone.png" alt="" />
-        <img src="/imgs/icon-phone-hover.png" alt="" />
-        <span>手机扫一扫</span>
-      </a>
-    </div>
-    <div class="tool-bar-item">
-      <a href="javascript:;">
-        <img src="/imgs/icon-people.png" alt="" />
-        <img src="/imgs/icon-people-hover.png" alt="" />
-        <span>个人中心</span>
-      </a>
-    </div>
-    <div class="tool-bar-item">
-      <a href="javascript:;">
-        <img src="/imgs/icon-set.png" alt="" />
-        <img src="/imgs/icon-set-hover.png" alt="" />
-        <span>售后服务</span>
-      </a>
-    </div>
-    <div class="tool-bar-item">
-      <a href="javascript:;">
-        <img src="/imgs/icon-service.png" alt="" />
-        <img src="/imgs/icon-service-hover.png" alt="" />
-        <span>人工服务</span>
-      </a>
-    </div>
-    <div class="tool-bar-item">
-      <a href="javascript:;">
-        <img src="/imgs/icon-cart.png" alt="" />
-        <img src="/imgs/icon-cart-hover.png" alt="" />
-        <span>购物车</span>
-      </a>
-    </div> -->
     <!-- 返回顶部 -->
     <div class="tool-bar-item">
       <a href="javascript:;" @click="backTop">
         <span class="icon-top"></span>
         顶部
-        <!-- <img src="/imgs/icon-cart.png" alt="" />
-        <img src="/imgs/icon-cart-hover.png" alt="" /> -->
-        <!-- <span>回顶部</span> -->
       </a>
     </div>
   </div>
@@ -54,7 +16,7 @@ export default {
   data() {
     return {
       scrollTop: 0,
-      isShowTop: false
+      isShowTop: false,
     };
   },
   mounted() {
@@ -83,11 +45,11 @@ export default {
           clearInterval(timer);
         }
       }, 16);
-    }
+    },
   },
   destroyed() {
     window.removeEventListener("scroll", this.scrollToTop);
-  }
+  },
 };
 </script>
 

@@ -2,26 +2,27 @@
   <div id="cart">
     <!-- 头部 -->
     <nav-header></nav-header>
-    <!-- <com-header>
-      <span slot="title-h" class="title-h">我的购物车</span>
-      <span slot="title-p" class="title-p">产品以实物为准</span>
-    </com-header> -->
-
+    <!-- 加载中 -->
+    <div class="cart-loading" v-if="showLoading">
+      <loading class="cart-loading-row" :loadingNum="2" />
+    </div>
     <!-- 主要内容 -->
-    <div class="cart-main" v-if="showCart">
+    <div class="cart-main" v-else-if="showCart && !showLoading">
       <div class="container">
+        <!-- 头部 -->
         <div class="goods-list clear-fix">
+          <!-- 标题内容 -->
           <div class="list-head list">
             <ul>
               <li class="list-check">
                 <span
-                  v-show="this.$store.getters.allCheck"
-                  :class="{ isActive: this.$store.getters.allCheck }"
+                  v-show="selectedNum === goodsList.length"
+                  :class="{ isActive: selectedNum === goodsList.length }"
                   @click="checkAll"
                   ></span
                 >
                 <span
-                  v-show="!this.$store.getters.allCheck"
+                  v-show="selectedNum !== goodsList.length"
                   @click="checkAll"
                 ></span
                 >全选
@@ -34,7 +35,7 @@
               <li class="list-action">操作</li>
             </ul>
           </div>
-          <!-- 遍历商品 -->
+          <!-- 商品列表 -->
           <div
             class="list-body list"
             v-for="(item, index) in this.goodsList"
@@ -43,64 +44,67 @@
             <ul>
               <li class="list-check">
                 <span
-                  v-show="item.selected"
+                  v-show="item.isSelect === 1"
                   @click="check(item)"
-                  :class="{ isActive: item.selected }"
+                  :class="{ isActive: item.isSelect === 1 }"
                   ></span
                 >
-                <span v-show="!item.selected" @click="check(item)"></span>
+                <span v-show="item.isSelect === -1" @click="check(item)"></span>
               </li>
               <li class="list-img">
-                <a :href="/product/ + item.id">
-                  <img :src="item.img" alt="" />
+                <a
+                  href="javaScript:;"
+                  @click="$router.push(`/product/${item.spu_id}`)"
+                >
+                  <img :src="item.imgurl" alt="" />
                 </a>
               </li>
               <li class="list-name">
-                <a href="javascript:;">
-                  <h3 class="name">{{ item.name }}</h3>
+                <a
+                  href="javaScript:;"
+                  @click="$router.push(`/product/${item.spu_id}`)"
+                >
+                  <h3 class="name">{{ item.sku_name }}</h3>
                 </a>
               </li>
-              <li class="list-price">{{ item.price }}元</li>
+              <li class="list-price">{{ item.price | price }}元</li>
               <li class="list-num list-counter">
                 <div class="wrapper">
                   <a
                     href="javascript:;"
                     class="btn-item"
-                    @click="decrease(item)"
+                    @click="decrease(item, -1)"
                     >-</a
                   >
                   <input
                     type="text"
                     class="counter"
-                    v-model="item.counter"
+                    v-model="item.product_num"
                     @blur="checkText(item)"
                   />
                   <a
                     href="javascript:;"
                     class="btn-item"
-                    @click="increment(item)"
+                    @click="increment(item, 1)"
                     >+</a
                   >
                 </div>
+                <span class="stock">
+                  产品库存量
+                  <span>{{ item.stock }}</span>
+                  件
+                </span>
               </li>
               <li class="list-total list-margin">
-                <span>{{ item.totalPrice }}元</span>
+                <span>{{ (item.product_num * item.price) | price }}元</span>
               </li>
               <li class="list-action">
-                <a href="javascript:;" @click="showModal = true"></a>
+                <a href="javascript:;" @click="remove(item, index)"></a>
               </li>
             </ul>
-            <!-- 模态框 -->
-            <modal
-              :showModal="showModal"
-              :title="'提示'"
-              @onConfirm="remove(item.id, index)"
-              @onClose="showModal = false"
-            >
-              <div slot="body" class="body-text">确定要从购物车删除吗</div>
-            </modal>
           </div>
         </div>
+        <!-- 底部-->
         <div class="cart-bar clear-fix">
           <div class="section-left fl">
             <a href="/index">继续购物</a>
@@ -114,7 +118,7 @@
           </div>
           <div class="section-right fr">
             <span class="total-price"
-              >合计：<i>{{ this.$store.getters.allPrice }}</i
+              >合计：<i>{{ allPrice | price }}</i
               >元</span
             >
             <a class="total-btn" @click="buyGoods">去结算</a>
@@ -122,6 +126,7 @@
         </div>
       </div>
     </div>
+    <!-- 空的购物车 -->
     <div class="cart-empty clear-fix" v-else>
       <div class="container">
         <div class="empty-left fl"></div>
@@ -131,17 +136,39 @@
         </div>
       </div>
     </div>
+    <!-- 删除商品模态框 -->
+    <modal
+      :showModal="showModal"
+      title="提示"
+      @onConfirm="modalRemove(cartItem, cartIndex)"
+      @onClose="showModal = false"
+    >
+      <div slot="body" class="body-text">确定要从购物车删除吗</div>
+    </modal>
     <!-- 底部 -->
     <nav-footer></nav-footer>
   </div>
 </template>
 
 <script>
-import NavHeader from "components/NavHeader";
-import NavFooter from "components/NavFooter/NavFooter";
+import { mapState } from "vuex";
 
-import Modal from "components/Modal";
+import NavHeader from "components/navheader/NavHeader";
+import NavFooter from "components/NavFooter/NavFooter";
+import Loading from "components/loading/Loading";
+import Modal from "components/modal/Modal";
 import Toach from "components/Toach";
+
+import {
+  getCartData,
+  romoveCartItem,
+  updateItemCount,
+  changeSelectStatus,
+  selectAllCart,
+  selectNoneCart,
+} from "network/cart";
+
+import { throttle } from "utils/throttle";
 
 import * as types from "../../store/mutations.types";
 
@@ -151,128 +178,296 @@ export default {
     NavHeader,
     NavFooter,
     Modal,
-    Toach
+    Toach,
+    Loading,
+  },
+  created() {
+    // 网络请求
+    this.getCartData();
   },
   data() {
     return {
-      goodsList: [],
-      showModal: false,
-      showCart: true
+      goodsList: [], // 产品列表
+      showModal: false, // 展示删除模态框
+      showCart: true, // 展示购物车列表
+      isOneClick: true, // 第一次点击
+      returnfunc() {}, // 节流阀函数
+      lastNum: 0, // 用于记录上一次输入input的产品数量
+      cartItem: 0, // 要删除的商品
+      cartIndex: 0, // 要删除的商品的索引号
+      showLoading: true, // 加载中
     };
+  },
+  filters: {
+    price(value) {
+      return typeof value === "number" ? value.toFixed(2) : value;
+    },
   },
   computed: {
     // 已选择的商品个数
     selectedNum() {
       let count = 0;
-      this.goodsList.forEach(item => {
-        if (item.selected) {
+      this.goodsList.forEach((item) => {
+        if (item.isSelect === 1) {
           count += 1;
         }
       });
       return count;
-    }
+    },
+    // 已选中商品共计总数钱
+    allPrice() {
+      let sum = 0;
+      this.goodsList.forEach((item) => {
+        if (item.isSelect === 1) {
+          sum += item.product_num * item.price;
+        }
+      });
+      return sum;
+    },
+    ...mapState(["userInfo"]),
   },
   methods: {
     /**
      * 更新商品
      */
-    increment(item) {
-      item.counter++;
-      if (item.counter > item.storeNum) {
-        this.$toach.show(`商品件数仅剩${item.storeNum}件喔`, 2000);
-        item.counter = item.storeNum;
+    increment(item, num) {
+      // 数量加1
+      // 产品数量是否大于产品库存量
+      if (item.product_num + 1 > item.stock) {
+        this.$toach.show(`商品件数最大数量是${item.stock}喔`, 2000);
+        item.product_num = item.stock;
         return;
+      } else {
+        this.updateNum(item, num);
       }
-      this.$store.commit(types.UPDATE_CARTINFO, {
-        id: item.id,
-        counter: item.counter
-      });
     },
-    decrease(item) {
-      item.counter--;
-      if (item.counter < 1) {
+    decrease(item, num) {
+      // 数量减一
+      // 判断产品数量是否小于产品库存量
+      if (item.product_num - 1 < 1) {
         this.$toach.show("商品件数不可以少于1件喔", 2000);
-        item.counter = 1;
+        item.product_num = 1;
         return;
+      } else {
+        this.updateNum(item, num);
       }
-      this.$store.commit(types.UPDATE_CARTINFO, {
-        id: item.id,
-        counter: item.counter
-      });
     },
-    remove(id, index) {
-      this.goodsList.splice(index, 1);
-      this.$store.commit(types.REMOVE_CARTITEM, id);
-      this.showModal = false;
-
+    updateNum(item, num, func) {
+      // 节流来防止用户快速点击，减少网络请求，增加性能
+      // 第一次点击时记录返回函数（其实是记录当前时间）
+      if (this.isOneClick) {
+        this.returnfunc = throttle(this.requestUpdateNum, 500);
+        // 第一次并没有执行返回函数，所以先执行一次更新数量函数
+        this.requestUpdateNum(item, num);
+        this.isOneClick = false;
+      } else {
+        // 执行节流阀
+        this.returnfunc(item, num);
+      }
+    },
+    requestUpdateNum(item, num) {
+      // 发送网络请求更新数量
+      updateItemCount(num, item.cart_id)
+        .then((res) => {
+          if (res.data.affectedRows === 1) {
+            item.lastNum += num;
+            // 记录最后一次产品数量
+            item.product_num = item.lastNum;
+            // 更新购物车的总数量
+            this.$store.dispatch("saveCartCount", num);
+          } else {
+            this.$toach.show("操作失败");
+          }
+        })
+        .catch((err) => {
+          console.log(this.err);
+          this.$toach.show("操作失败，请刷新网络");
+        });
+    },
+    modalRemove(item, index) {
+      romoveCartItem(item.cart_id)
+        .then((res) => {
+          if (res.data.affectedRows === 1) {
+            // 刷新购物车的数据
+            this.$store.dispatch("saveCartCount", -item.product_num);
+            // 本地删除数据
+            this.goodsList.splice(index, 1);
+            // 判断购物车是否为空
+            if (this.goodsList.length <= 0) {
+              this.showCart = false;
+            }
+            this.showModal = false;
+            this.$toach.show("删除成功");
+          } else {
+            this.showModal = false;
+            this.$toach.show("删除失败");
+          }
+        })
+        .catch(() => {
+          this.showModal = false;
+          this.$toach.show("删除失败，请刷新网络");
+        });
       if (this.goodsList.length <= 0) {
         this.showCart = false;
       }
     },
+    remove(item, index) {
+      // 显示模态框
+      this.showModal = true;
+      // 删除的购物车商品赋值
+      this.cartItem = item;
+      this.cartIndex = index;
+    },
+    /**
+     * 选中商品
+     */
     check(item) {
-      item.selected = !item.selected;
-      this.$store.commit(types.UPDATE_SELECTED, {
-        id: item.id,
-        selected: item.selected
-      });
+      // 选中或取消单个商品
+      changeSelectStatus(item.cart_id)
+        .then((res) => {
+          if (res.data.affectedRows === 1) {
+            if (item.isSelect === 1) {
+              item.isSelect = -1;
+            } else {
+              item.isSelect = 1;
+            }
+          } else {
+            this.$toach.show("请求失败");
+          }
+          // console.log(this.goodsList);
+        })
+        .catch((err) => {
+          this.$toach.show("请求失败");
+        });
+
+      // console.log(item.selected);
+      // this.$store.commit(types.UPDATE_SELECTED, {
+      //   id: item.id,
+      //   selected: item.selected,
+      // });
     },
     checkAll() {
-      let allCheck = this.$store.getters.allCheck;
+      // 查看是否全部选中
+      const allCheck = this.allCheckStatus();
+      // 全部选中
       if (allCheck) {
-        this.goodsList.forEach(item => {
-          item.selected = false;
-        });
+        // 全部取消选中 网络请求
+        selectNoneCart(this.userInfo.user_id)
+          .then((res) => {
+            this.goodsList.forEach((item) => {
+              item.isSelect = -1;
+            });
+          })
+          .catch((err) => {
+            console.log(err);
+          });
+        // this.goodsList.forEach((item) => {
+        //   item.isSelect = -1;
+        // });
       } else {
-        this.goodsList.forEach(item => {
-          item.selected = true;
-        });
+        // console.log(this.userInfo.user_id);
+        // 全部选中，网络请求
+        selectAllCart(this.userInfo.user_id)
+          .then((res) => {
+            this.goodsList.forEach((item) => {
+              item.isSelect = 1;
+            });
+          })
+          .catch((err) => {
+            console.log(err);
+          });
       }
-      this.$store.commit(types.UPDATE_ALLSELECTED, !allCheck);
+    },
+    allCheckStatus() {
+      // 检查购物车全选状态
+      let flag = true; // 默认全部选中
+      this.goodsList.some((item) => {
+        if (item.isSelect === -1) {
+          flag = false;
+          return true;
+        }
+      });
+      // // 若购物车为空
+      // if (this.goodsList.length === 0) {
+      //   flag = false;
+      // }
+      return flag;
     },
     checkText(item) {
       const reg = /^[0-9]{1,}$/;
-      if (reg.test(item.counter)) {
-        if (item.counter > item.storeNum) {
-          item.counter = item.storeNum;
-          this.$toach.show(`亲！商品仅剩数量${item.storeNum}件了喔！`);
+      // 输入的为数字
+
+      if (reg.test(item.product_num)) {
+        // 如果输入的数量小于1，也是把产品数量维持不变
+        if (item.product_num < 1) {
+          item.product_num = item.lastNum;
+          this.$toach.show(`亲！商品不可以少于一件的喔！`);
+          return;
         }
+
+        // 如果输入的数量大于当前的库存量，则把产品数量维持不变
+        if (item.product_num > item.stock) {
+          item.product_num = item.stock;
+          this.$toach.show(`亲！您购买的商品超过库存量啦！`);
+        }
+
+        // 计算变化的数量
+        const num = item.product_num - item.lastNum;
+
+        // 更新产品数量
+        this.updateNum(item, num);
       } else {
-        this.$toach.show(`亲！请输入数字喔！`);
-        item.counter = 1;
+        // 如果输入的文本不是数字，也是把产品数量维持不变
+        this.$toach.show(`亲！请输入大于0的数字喔！`);
+        item.product_num = item.lastNum;
       }
-      this.$store.commit(types.UPDATE_CARTINFO, {
-        id: item.id,
-        counter: item.counter
-      });
     },
     /**
      * 去结算
      */
     buyGoods() {
-      let flag = true;
-      const arr = this.goodsList.filter(item => {
-        if (!item.selected) {
+      const arr = this.goodsList.filter((item) => {
+        // 未选中
+        if (item.isSelect === -1) {
           return true;
         }
       });
       // 商品全部未选中
-      if (arr.length == this.goodsList.length) {
+      if (arr.length === this.goodsList.length) {
         this.$toach.show("您还未选中商品呢");
         return;
       } else {
         // 商品选中
-        this.$router.replace("order");
+        this.$router.push("/order");
       }
-    }
+    },
+    /**
+     * 网络请求
+     * */
+    getCartData() {
+      getCartData(this.userInfo.user_id)
+        .then((res) => {
+          // 取消loading
+          this.showLoading = false;
+          // 判断购物车是否为空
+          if (res.data.code === -1 || res.data.length <= 0) {
+            this.showCart = false;
+          } else {
+            this.goodsList = res.data;
+            // 记录最后一次的产品数量
+            this.goodsList.forEach((item) => {
+              item.lastNum = item.product_num;
+            });
+          }
+          // 更新购物车的数量
+          this.$store.dispatch("saveCartCount");
+        })
+        .catch((arr) => {
+          console.log(arr);
+          this.$toach.show("网络较差，请刷新重试");
+        });
+    },
   },
-  created() {
-    this.goodsList = this.$store.state.cart;
-  },
-  mounted() {
-    if (this.goodsList.length <= 0) {
-      this.showCart = false;
-    }
-  }
 };
 </script>
 
@@ -281,7 +476,7 @@ export default {
 #cart .title-h {
   font-size: 28px;
   font-weight: normal;
-  color: #424242;
+  color: #493e3e;
 }
 #cart .title-p {
   margin: 5px 20px;
@@ -300,7 +495,7 @@ export default {
   height: 70px;
   line-height: 70px;
   text-align: center;
-  border-bottom: 1px solid #ccc;
+  border-bottom: 1px solid #e0e0e0;
 }
 #cart .list li {
   float: left;
@@ -338,10 +533,12 @@ export default {
 }
 #cart .list .list-img a {
   display: inline-block;
+  width: 70px;
+  height: 70px;
 }
 #cart .list .list-img img {
-  width: 80px;
-  height: 80px;
+  width: 70px;
+  height: 70px;
 }
 #cart .list .list-name {
   width: 380px;
@@ -351,12 +548,17 @@ export default {
   font-size: 18px;
   color: #333;
   font-weight: normal;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 #cart .list .list-price {
   width: 160px;
 }
 #cart .list .list-num {
   width: 150px;
+  height: 70px;
+  position: relative;
 }
 #cart .list .list-num .wrapper {
   position: absolute;
@@ -378,7 +580,7 @@ export default {
   line-height: 38px;
 }
 #cart .list-num .btn-item:hover {
-  background-color: rgba(0, 0, 0, 0.1);
+  background-color: rgba(0, 0, 0, 0.2);
 }
 #cart .list-num .counter {
   display: inline-block;
@@ -388,16 +590,30 @@ export default {
   line-height: 38px;
   color: #666;
 }
+#cart .list .list-num .stock {
+  position: absolute;
+  height: 30px;
+  width: 200%;
+  line-height: 30px;
+  color: #999;
+  left: 50%;
+  transform: translate(-50%, 0);
+  font-size: 12px;
+  bottom: -20px;
+}
+#cart .list .list-num .stock span {
+  color: var(--color-assist);
+  opacity: 0.7;
+}
 #cart .list .list-total {
   width: 200px;
 }
 #cart .list .list-margin {
   width: 200px;
-  padding-left: 150px;
   /* margin-left: 150px; */
 }
 #cart .list-total span {
-  color: #ff6700;
+  color: var(--color-topic);
 }
 #cart .list .list-action {
   width: 96px;
@@ -410,7 +626,7 @@ export default {
   content: "\ea0d";
 }
 #cart .list .list-action a:hover {
-  color: #ff6700;
+  color: var(--color-topic);
 }
 #cart .list-body {
   padding: 25px 0;
@@ -440,11 +656,11 @@ export default {
 }
 #cart .total-num i {
   font-style: normal;
-  color: #ff6700;
+  color: var(--color-topic);
 }
 #cart .section-right .total-price {
   font-size: 14px;
-  color: #ff6700;
+  color: var(--color-topic);
   margin-right: 50px;
 }
 #cart .section-right .total-price i {
@@ -455,7 +671,7 @@ export default {
   text-align: center;
   display: inline-block;
   width: 200px;
-  background-color: #ff00dd;
+  background-color: var(--color-assist);
   color: #fff;
   font-size: 18px;
   cursor: pointer;
@@ -484,12 +700,23 @@ export default {
   line-height: 60px;
   width: 200px;
   font-size: 24px;
-  background-color: #ff00dd;
+  background-color: var(--color-assist);
   margin-top: 20px;
   text-align: center;
 }
 #cart .body-text {
   line-height: 40px;
   margin-bottom: 40px;
+}
+#cart > .cart-loading {
+  position: relative;
+  width: 1266px;
+  margin: 0 auto;
+  height: 500px;
+}
+#cart > .cart-loading .cart-loading-row {
+  right: 50%;
+  right: none;
+  transform: translate(50%, -50%);
 }
 </style>

@@ -12,11 +12,13 @@ export default new Vuex.Store({
     token: window.localStorage.getItem("token")
       ? window.localStorage.getItem("token")
       : "",
-    userInfo: {},
+    userInfo: window.localStorage.getItem("userInfo")
+      ? window.localStorage.getItem("userInfo")
+      : {},
     loginStatus: false,
-    cart: []
+    cartCount: 0, // 购物车的数量
   },
   mutations,
   actions,
-  getters
+  getters,
 });

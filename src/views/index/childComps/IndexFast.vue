@@ -37,8 +37,8 @@
                 :key="number"
                 class="fast-swiper-row"
               >
-                <a :href="/product/ + sub.spu_id">
-                  <img :src="sub.imgurl" alt="" />
+                <a href="javaScript:;" @click="$router.push(`/product/${ sub.spu_id}`)">
+                  <img :src="sub.imgurl" />
                   <h3 class="title">{{ sub.title }}</h3>
                   <p class="intro">{{ sub.intro }}</p>
                   <p class="price">{{ sub.price }}元起</p>
@@ -53,7 +53,7 @@
 </template>
 
 <script>
-import CountdownTime from "components/CountdownTime";
+import CountdownTime from "components/countdowntime/CountdownTime";
 
 import "swiper/dist/css/swiper.css";
 import { swiper, swiperSlide } from "vue-awesome-swiper";
@@ -63,18 +63,18 @@ export default {
   components: {
     CountdownTime,
     swiper,
-    swiperSlide
+    swiperSlide,
   },
   props: {
     fastProductList: {
       type: Array,
       default() {
         return [];
-      }
+      },
     },
     endTime: {
-      type: String
-    }
+      type: String,
+    },
   },
   data() {
     return {
@@ -83,11 +83,12 @@ export default {
         loop: true,
         autoplay: true,
         speed: 1000,
+        lazyLoading: true,
         navigation: {
           nextEl: ".swiper-button-next",
-          prevEl: ".swiper-button-prev"
-        }
-      }
+          prevEl: ".swiper-button-prev",
+        },
+      },
     };
   },
   computed: {
@@ -97,14 +98,15 @@ export default {
     },
     fastSwiper() {
       return this.$refs.fastSwiper.swiper;
-    }
-  }
+    },
+  },
 };
 </script>
 
 <style>
 .product-fast {
   position: relative;
+  margin-bottom: 24px;
 }
 .product-fast .fast-title .big-title {
   height: 58px;
@@ -156,19 +158,19 @@ export default {
   padding-top: 40px;
   text-align: center;
   box-sizing: border-box;
-  border-top: 1px solid var(--color-topic);
+  border-top: 1px solid #ef3a3b;
   background-color: #f1eded;
 }
 .fast-produts .fast-time .current-time {
   height: 46px;
-  color: var(--color-assist);
+  color: #ef3a3b;
   font-size: 22px;
   padding-top: 15px;
 }
 .fast-produts .fast-time .fast-bgimg {
-  width: 120px;
-  height: 55px;
-  background: url("~assets/imgs/logo.png") no-repeat;
+  width: 50px;
+  height: 70px;
+  background: url("~assets/imgs/index/fast.png") no-repeat;
   background-size: contain;
   margin: 25px auto;
 }

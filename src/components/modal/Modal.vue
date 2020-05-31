@@ -17,11 +17,26 @@
           <slot name="body"></slot>
         </div>
         <div class="modal-footer">
-          <button class="btn-item" @click="$emit('onConfirm')">
+          <button
+            class="btn-item"
+            @click="$emit('onConfirm')"
+            v-if="buttonNum === 2"
+          >
             {{ confirmText }}
           </button>
-          <button class="btn-item btn-close" @click="$emit('onClose')">
+          <button
+            class="btn-item btn-close"
+            @click="$emit('onClose')"
+            v-if="buttonNum === 2"
+          >
             {{ CloseText }}
+          </button>
+          <button
+            class="btn-item"
+            @click="$emit('onConfirm')"
+            v-if="buttonNum === 1"
+          >
+            {{ confirmText }}
           </button>
         </div>
       </div>
@@ -34,26 +49,36 @@ export default {
   name: "modal",
   props: {
     title: {
+      // 标题
       type: String,
-      default: "提示"
+      default: "提示",
     },
     confirmText: {
+      // 确认文字
       type: String,
-      default: "确定"
+      default: "确定",
     },
     CloseText: {
+      // 取消文字
       type: String,
-      default: "取消"
+      default: "取消",
     },
     showMast: {
+      // 遮罩展示
       type: Boolean,
-      default: true
+      default: true,
     },
     showModal: {
-      tyep: Boolean,
-      default: false
-    }
-  }
+      // 展示模态框
+      type: Boolean,
+      default: false,
+    },
+    buttonNum: {
+      // 底部按钮的数量
+      type: Number,
+      default: 2,
+    },
+  },
 };
 </script>
 
@@ -64,8 +89,8 @@ export default {
   top: 0;
   width: 100%;
   height: 100%;
-  z-index: 11;
-  transition: all linear 0.3s;
+  z-index: 999;
+  transition: top 0.4s linear;
 }
 .modal .modal-mask {
   position: fixed;
@@ -73,7 +98,7 @@ export default {
   top: 0;
   width: 100%;
   height: 100%;
-  background-color: rgba(0, 0, 0);
+  background-color: rgba(0, 0, 0, 0.5);
   opacity: 0.5;
 }
 .modal .modal-content {
@@ -98,7 +123,7 @@ export default {
   color: #333;
 }
 .modal .modal-header .header-close:hover.header-close::after {
-  color: #ff6700;
+  color: var(--color-topic);
 }
 .modal .modal-body {
   padding: 40px 40px 0 40px;
@@ -113,7 +138,7 @@ export default {
 }
 .modal .modal-footer .btn-item {
   border: none;
-  background-color: #ff6700;
+  background-color: var(--color-topic);
   width: 160px;
   height: 40px;
   color: #fff;
@@ -131,9 +156,9 @@ export default {
 
 .modal.slide-enter,
 .modal.slide-leave-to {
-  height: 0;
+  top: -100%;
 }
-.modal.slide-enter-to .modal.slide-leave {
-  height: 100%;
+.modal.slide-leave {
+  top: 50%;
 }
 </style>

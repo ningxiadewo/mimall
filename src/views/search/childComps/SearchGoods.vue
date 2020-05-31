@@ -1,5 +1,5 @@
 <template>
-  <div class="search-goods">
+  <div class="search-goods clear-fix">
     <search-goods-list
       v-for="(item, index) in goodsList"
       :key="index"
@@ -13,16 +13,16 @@ import SearchGoodsList from "./SearchGoodsList";
 export default {
   name: "search-goods",
   components: {
-    SearchGoodsList
+    SearchGoodsList,
   },
   props: {
     goodsList: {
       type: Array,
       default() {
         return [];
-      }
-    }
-  }
+      },
+    },
+  },
 };
 </script>
 

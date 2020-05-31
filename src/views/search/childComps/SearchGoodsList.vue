@@ -1,11 +1,16 @@
 <template>
   <div class="search-goods-list">
-    <a :href="/product/ + goodsInfo.spu_id">
+    <a
+      href="javaScript:;"
+      @click="$router.push(`/product/${goodsInfo.spu_id}`)"
+    >
       <img :src="goodsInfo.imgurl" alt="" />
       <div class="wrapper">
-        <p class="name">{{ goodsInfo.goods_name }}</p>
-        <p class="intro">{{ goodsInfo.goods_name }}</p>
-        <p class="price">￥{{ goodsInfo.low_price }}</p>
+        <p class="name">
+          <span>{{ goodsInfo.goods_name }}</span>
+          {{ goodsInfo.intro }}
+        </p>
+        <p class="price">￥{{ goodsInfo.low_price }}起</p>
       </div>
     </a>
   </div>
@@ -19,9 +24,9 @@ export default {
       type: Object,
       default() {
         return {};
-      }
-    }
-  }
+      },
+    },
+  },
 };
 </script>
 
@@ -35,7 +40,13 @@ export default {
   overflow: hidden;
   margin: 0 29px 29px 0;
   position: relative;
-  box-shadow: 0 0 30px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 0 30px rgba(0, 0, 0, 0.1);
+  box-sizing: border-box;
+  transition: all 0.3s;
+}
+.search-goods-list:hover {
+  transform: translate3d(0, -10px, 0);
+  box-shadow: 0 0 30px rgba(0, 0, 0, 0.3);
 }
 .search-goods-list:nth-child(5n) {
   margin-right: 0;
@@ -52,9 +63,6 @@ export default {
   /* width: 230px; */
   height: 294px;
 }
-.search-goods-list .name {
-  color: #333;
-}
 .search-goods-list > a > .wrapper {
   position: absolute;
   left: 0;
@@ -62,9 +70,17 @@ export default {
   padding: 0 10px;
 }
 .search-goods-list > a .name {
-  height: 18px;
+  height: 36px;
   line-height: 18px;
+  overflow: hidden;
   color: #666;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+.search-goods-list > a .name > span {
+  color: var(--color-topic);
+  font-weight: 700;
 }
 .search-goods-list > a .intro {
   height: 18px;

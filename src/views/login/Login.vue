@@ -1,15 +1,8 @@
 <template>
   <div id="login">
-    <div class="container">
-      <!-- 头部 -->
-      <div class="login-title">
-        <div class="login-logo"></div>
-        <div class="title-text">
-          <h3>用户登录</h3>
-          <p>让每个人都可以享受环保的健康</p>
-        </div>
-      </div>
-    </div>
+    <com-header>
+      <span slot="title-h" class="title-h">用户登录</span>
+    </com-header>
     <!-- 登录填充 -->
     <div class="login-banner">
       <div class="login-info">
@@ -25,10 +18,10 @@
                 type="text"
                 name="userName"
                 autofocus="autofocus"
-                placeholder="请输入账号"
+                placeholder="请输入用户名"
                 v-model="userName"
                 :style="userNameStyle"
-                @focus="userNameBtn"
+                @focus="loginTipStyle('none', 'userNameStyle', '#ccc')"
               />
             </div>
             <div class="info-item info-password">
@@ -38,23 +31,28 @@
                 placeholder="请输入密码"
                 v-model="password"
                 :style="passwordStyle"
-                @focus="passwordBtn"
+                @keyup.13="login"
+                @focus="loginTipStyle('none', 'passwordStyle', '#ccc')"
               />
             </div>
             <!-- 登录提示 -->
             <div class="login-tip" :style="tipStyle">
-              <span class="tip-text">请输入账号</span>
+              <span class="tip-text">{{ tipText }}</span>
             </div>
 
             <!-- 登录 -->
             <div class="info-item info-login">
-              <input type="button" name="submit" value="登录" @click="login" />
+              <a
+                href="javaScript:;"
+                @click="login"
+                :class="{ noDrop: loginload }"
+              >
+                <span>登录 <loading v-if="loginload"/></span
+              ></a>
             </div>
-
             <div class="info-other">
-              <a href="javascript;;" class="register">立即注册</a>
-              <span></span>
-              <a href="javascript:;" class="forgetPassword">忘记密码</a>
+              <a href="/register" class="register">没有账号？立即注册</a>
+              <!-- <a href="javascript:;" class="forgetPassword">忘记密码</a> -->
             </div>
           </div>
         </div>
@@ -65,14 +63,18 @@
 </template>
 
 <script>
+import ComHeader from "components/comheader/ComHeader";
 import NavFooter from "components/NavFooter/NavFooter";
-
-import login from "network/loginRequest";
+import NavTopbar from "components/navheader/childComps/NavTopbar";
+import Loading from "components/loading/Loading";
 
 export default {
   name: "login",
   components: {
-    NavFooter
+    NavFooter,
+    Loading,
+    NavTopbar,
+    ComHeader,
   },
   data() {
     return {
@@ -80,85 +82,65 @@ export default {
       password: "",
       tipStyle: {},
       userNameStyle: {},
-      passwordStyle: {}
+      passwordStyle: {},
+      loginload: false, // 登录中加载动画
+      tipText: "请输入用户名",
     };
   },
   methods: {
     /**
-     * 账号框点击
+     * 登录样式提示
+     * dis: tipStyle显示方式
+     * Style: 用户名框或者密码框的样式
+     * borColor: boder颜色
      */
-    userNameBtn() {
+    loginTipStyle(dis, inputStyle, borColor) {
       this.tipStyle = {
-        display: "none"
+        display: dis,
       };
-      this.userNameStyle = {
-        borderColor: "#ccc"
-      };
-    },
-    /**
-     * 密码框点击
-     */
-    passwordBtn() {
-      this.tipStyle = {
-        display: "none"
-      };
-      this.passwordStyle = {
-        borderColor: "#ccc"
+      this[inputStyle] = {
+        borderColor: borColor,
       };
     },
     /**
      * 登录
      */
     login() {
+      // 判断是否处于加载中，如果在加载中，则退出
+      if (this.Loading) {
+        return;
+      }
+      // 判断用户名是否为空
       if (this.userName === "") {
-        this.tipStyle = {
-          display: "block"
-        };
-        this.userNameStyle = {
-          borderColor: "#21c804"
-        };
-        document.querySelector(".tip-text").innerHTML = "请输入账号";
+        this.loginTipStyle("block", "userNameStyle", "var(--color-topic)");
+        this.tipText = "请输入用户名";
       } else if (this.password === "") {
-        this.tipStyle = {
-          display: "block"
-        };
-        this.passwordStyle = {
-          borderColor: "#21c804"
-        };
-        document.querySelector(".tip-text").innerHTML = "请输入密码";
+        // 判断密码是否为空
+        this.loginTipStyle("block", "passwordStyle", "var(--color-topic)");
+        this.tipText = "请输入密码";
       } else {
+        // 加载登录动画
+        this.loginload = true;
         this.$store
           .dispatch("toLogin", {
             // dispatch toLogin action
             loginUser: this.userName,
-            loginPassword: this.password
+            loginPassword: this.password,
           })
           .then(() => {
+            this.loginload = false;
             // 跳转到指定的路由
-            this.$router.replace({
-              path: "index"
-            });
+            this.$router.replace("/");
+            this.$toach.show("登录成功");
           })
           .catch(() => {
-            this.tipStyle = {
-              display: "block"
-            };
-            this.userNameStyle = {
-              borderColor: "var(--color-topic)"
-            };
-            document.querySelector(".tip-text").innerHTML =
-              "账号或密码错误，请重新输入";
+            this.loginload = false;
+            this.loginTipStyle("block", "userNameStyle", "var(--color-topic)");
+            this.tipText = "用户密码或者账号错误";
           });
       }
-    }
+    },
   },
-  mounted() {
-    document.onkeyup = e => {
-      if (e.keyCode == 13) {
-        this.login();
-      }
-    };
-  }
 };
 </script>
 
@@ -197,10 +179,14 @@ export default {
 .login-banner .wrapper {
   position: absolute;
   right: 100px;
-  top: 30px;
-  width: 410px;
-  height: 400px;
+  top: 15%;
+  width: 400px;
+  height: 340px;
   background-color: #fff;
+  opacity: 0.9;
+  box-shadow: 5px -5px 30px 0 rgba(81, 79, 79, 0.35),
+    -5px 5px 20px 0 rgba(81, 79, 79, 0.05);
+  border-radius: 10px;
 }
 .login-banner .wrapper-tab {
   height: 82px;
@@ -211,17 +197,19 @@ export default {
   font-size: 22px;
 }
 .login-banner .wrapper-info {
-  padding: 0 32px;
+  padding: 0 44px;
 }
 .login-banner .info-item {
   margin: 20px 0;
 }
-.login-banner .info-item input {
-  width: 346px;
-  height: 48px;
+.login-banner .info-item input,
+.login-banner .info-item a {
+  width: 310px;
+  height: 44px;
   border: 1px solid #ccc;
-  padding: 13px 16px;
+  padding: 0 18px;
   box-sizing: border-box;
+  border-radius: 22px;
 }
 .login-banner .info-userName {
   margin-top: 0;
@@ -242,34 +230,37 @@ export default {
   height: 16px;
   background: url(~assets/imgs/login/pwd-icons-new.png) -104px -49px no-repeat;
 }
-.login-banner .info-login input {
+.login-banner .info-login > a {
+  display: block;
   background-color: var(--color-topic);
   color: #fff;
-  cursor: pointer;
   transition: all 0.5s;
+  text-align: center;
+  padding: 0;
+  line-height: 44px;
+  font-size: 14px;
 }
-.login-banner .info-login input:hover {
-  background-color: var(--color-assist);
+.login-banner .info-login > a > span {
+  position: relative;
+}
+.login-banner .info-login a:hover {
+  opacity: 0.7;
 }
 .login-banner .wrapper-info .info-other {
-  display: flex;
-  justify-content: flex-end;
   height: 20px;
+  line-height: 20px;
+  text-align: center;
 }
+/* .login-banner .wrapper-info .info-other a:nth-child(1) {
+  border-right: 2px solid #999;
+} */
 .login-banner .wrapper-info .info-other a {
   font-size: 14px;
+  color: #666;
+  text-align: center;
+}
+
+.login-banner .login-info .info-other a:hover {
   color: var(--color-topic);
-  margin-left: 15px;
-}
-.login-banner .wrapper-info .info-other span {
-  height: 14px;
-  width: 2px;
-  background-color: #999;
-  margin-left: 15px;
-  margin-top: 3px;
-}
-.login-banner .login-info .wrapper a:hover,
-.login-banner .wrapper-tab .isActive {
-  color: var(--color-assist);
 }
 </style>

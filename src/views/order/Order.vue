@@ -1,12 +1,12 @@
 <template>
   <div id="order">
-    <com-header>
+    <com-header :showTopbar="true">
       <span slot="title-h" class="title-h">确认订单</span>
     </com-header>
     <div class="page-main">
       <div class="container">
         <!-- 收货地址 -->
-        <Address></Address>
+        <Address @selectedAddress="saveAddress" />
         <!-- 商品列表 -->
         <div class="goods-body">
           <h3 class="title">商品及其优惠卷</h3>
@@ -17,15 +17,21 @@
               :key="index"
             >
               <div class="fl item-img">
-                <img src="/imgs/nav-img/nav-1.png" alt="" />
+                <img :src="item.imgurl" alt="" />
               </div>
               <div class="fl item-name">
-                <a href="javaScript:;">{{ item.name }}</a>
+                <a
+                  href="javaScript:;"
+                  @click="$router.push(`/product/${item.spu_id}`)"
+                  >{{ item.sku_name }}</a
+                >
               </div>
               <div class="fl item-price">
-                {{ item.price }}元 x {{ item.counter }}
+                {{ item.price | price }}元 x {{ item.product_num }}
               </div>
-              <div class="fl item-total">{{ item.totalPrice }}元</div>
+              <div class="fr item-total">
+                {{ (item.product_num * item.price) | price }}元
+              </div>
             </li>
           </ul>
         </div>
@@ -46,11 +52,11 @@
           <ul class="fr">
             <li class="item">
               <span class="text">商品件数：</span>
-              <span class="price">{{ this.$store.getters.cartCount }}件</span>
+              <span class="price">{{ goodsInfo.length }}件</span>
             </li>
             <li class="item">
               <span class="text">商品总价：</span>
-              <span class="price">{{ this.$store.getters.allPrice }}元</span>
+              <span class="price">{{ allPrice | price }}元</span>
             </li>
             <li class="item">
               <span class="text">活动优惠：</span>
@@ -66,51 +72,162 @@
             </li>
             <li class="item total-price">
               <span class="text">应付总额：</span>
-              <span class="price">{{ this.$store.getters.allPrice }}元</span>
+              <span class="price">{{ allPrice | price }}元</span>
             </li>
           </ul>
         </div>
         <!-- 按钮 -->
         <div class="btn clear-fix">
-          <a href="/cart" class="to-compute fr">去结算</a>
-          <a href="/cart" class="to-cart fr">返回购物车</a>
+          <a
+            href="javaScript:;"
+            @click="toPay"
+            class="to-compute fr"
+            :class="{ noDrop: payLoad }"
+          >
+            <span style="position: relative"
+              >去付款<loading v-if="payLoad"
+            /></span>
+          </a>
+          <a
+            href="javaScript:;"
+            class="to-cart fr"
+            @click="$router.replace('/cart')"
+            >返回购物车</a
+          >
         </div>
       </div>
     </div>
-
     <nav-footer></nav-footer>
   </div>
 </template>
 
 <script>
+import { mapState } from "vuex";
+
 import ComHeader from "components/comheader/ComHeader";
 import Address from "components/address/Address";
 import NavFooter from "components/NavFooter/NavFooter";
+import Loading from "components/loading/Loading";
+
+import { getCartData } from "network/cart";
+import { addOrder, pay } from "network/order";
 
 export default {
   name: "order",
   components: {
     ComHeader,
     NavFooter,
-    Address
+    Address,
+    Loading,
+  },
+  computed: {
+    ...mapState(["userInfo"]),
+    allPrice() {
+      // 计算所有商品的总价格
+      const sum = this.goodsInfo.reduce((item, data) => {
+        return item + data.product_num * data.price;
+      }, 0);
+      return sum;
+    },
+  },
+  filters: {
+    price(value) {
+      return typeof value === "number" ? value.toFixed(2) : value;
+    },
   },
   created() {
-    this.goodsInfo = this.$store.state.cart;
+    getCartData(this.userInfo.user_id)
+      .then((res) => {
+        this.goodsInfo = res.data.filter((item) => {
+          if (item.isSelect === 1) {
+            return item;
+          }
+        });
+      })
+      .catch((err) => {
+        this.$toach.show("当前网络较差，请刷新网络");
+      });
   },
   data() {
     return {
-      goodsInfo: []
+      goodsInfo: [],
+      addressInfo: {},
+      payLoad: false,
     };
-  }
+  },
+  methods: {
+    /**
+     * 去付款
+     */
+    toPay() {
+      // 如果在付款中则退出
+      if (this.payLoad) {
+        return;
+      }
+      let orderItems = []; // 发送的商品信息
+      if (
+        this.addressInfo === undefined ||
+        this.addressInfo === null ||
+        Object.keys(this.addressInfo).length <= 0
+      ) {
+        this.$toach.show("您还没有选择收货地址呢");
+      } else if (this.goodsInfo.length <= 0) {
+        this.$toach.show("您的商品为空，请前往购物车页面选择商品");
+      } else {
+        const order = {
+          // 发送的地址信息
+          user_id: this.userInfo.user_id,
+          mobile: this.userInfo.user_tel,
+          address_id: this.addressInfo.address_id,
+        };
+        // 商品信息
+        this.goodsInfo.forEach((item) => {
+          orderItems.push({
+            product_id: item.product_id, //产品id
+            product_num: item.product_num, //产品数量
+            cart_id: item.cart_id, //对应购物车id
+            account: null,
+            ee_mobile: null,
+            shopId: null,
+          });
+        });
+        this.payLoad = true;
+        // 去付款
+        addOrder(order, orderItems)
+          .then((res) => {
+            this.payLoad = false;
+            console.log(res);
+            // if (res.data[0].master_id) {
+            pay(res.data[0].master_id)
+              .then((res) => {
+                console.log(res.data);
+                window.location.href = res.data;
+              })
+              .catch((err) => {
+                console.log(err);
+              });
+            this.$toach.show("即将跳转到付款页面");
+            // 更新购物车的数量
+            // }
+            this.$store.dispatch("saveCartCount");
+          })
+          .catch((err) => {
+            this.payLoad = false;
+            console.log(err);
+          });
+      }
+    },
+    /**
+     * 保存地址信息
+     */
+    saveAddress(info) {
+      this.addressInfo = info;
+    },
+  },
 };
 </script>
 
 <style>
-#order .title-h {
-  color: #333;
-  font-weight: normal;
-  font-size: 26px;
-}
 #order .page-main {
   padding: 40px 0 60px;
   background-color: #f5f5f5;
@@ -157,13 +274,12 @@ export default {
   font-size: 14px;
 }
 #order .item-price {
-  width: 150px;
+  width: 300px;
   text-align: center;
   font-size: 14px;
   color: #424242;
 }
 #order .item-total {
-  padding-left: 260px;
   color: var(--color-topic);
   font-size: 14px;
 }
@@ -203,8 +319,7 @@ export default {
   color: #757575;
 }
 #order .money-box .item .price {
-  display: inline-block;
-  width: 120px;
+  float: right;
   color: var(--color-topic);
   text-align: end;
 }

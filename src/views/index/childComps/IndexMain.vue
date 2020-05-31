@@ -14,8 +14,11 @@
             :key="number"
             class="product-item-row"
           >
-            <a :href="/product/ + sub.spu_id">
-              <img :src="sub.imgurl" alt="" />
+            <a
+              href="javaScript:;"
+              @click="$router.push(`/product/${sub.spu_id}`)"
+            >
+              <img v-lazy="sub.imgurl" alt="" />
               <h3 class="title">{{ sub.title }}</h3>
               <p class="intro">{{ sub.intro }}</p>
               <p class="price">{{ sub.price }}元起</p>
@@ -35,13 +38,13 @@ export default {
       type: Array,
       default() {
         return [];
-      }
+      },
     },
     title: {
       type: String,
-      default: "标题"
-    }
-  }
+      default: "标题",
+    },
+  },
 };
 </script>
 
@@ -51,7 +54,7 @@ export default {
 }
 .product-box .product-title {
   position: relative;
-  height: 85px;
+  height: 60px;
 }
 .product-box .big-title {
   position: absolute;
@@ -63,8 +66,6 @@ export default {
   padding: 0 30px;
   font-size: 28px;
   color: #333;
-  /* line-height: 85px; */
-  /* font-weight: normal; */
   text-align: center;
   transform: translate(-50%, -50%);
 }
@@ -85,8 +86,6 @@ export default {
 }
 
 .index-product-list {
-  display: flex;
-  justify-content: space-between;
   overflow: hidden;
 }
 .product-box .price {
@@ -110,30 +109,18 @@ export default {
   overflow: hidden;
   white-space: nowrap;
 }
-.index-product-list .product-item .product-item-row:nth-child(1),
-.index-product-list .product-item .product-item-row:nth-child(6) {
+.index-product-list .product-item .product-item-row:nth-child(5n + 1) {
   margin-left: 0;
-  padding: 0;
-  overflow: hidden;
-  width: 234px;
-  height: 300px;
 }
 
-.index-product-list .product-item .product-item-row:nth-child(1) img,
-.index-product-list .product-item .product-item-row:nth-child(6) img {
-  margin: 0;
-  width: 234px;
-  height: 300px;
-}
 .index-product-list .product-item .product-item-row {
   float: left;
-  margin-left: 24px;
   background-color: #fff;
   width: 234px;
   height: 260px;
-  padding: 20px 0;
+  padding: 50px 0;
   text-align: center;
-  margin-bottom: 24px;
+  margin: 24px 0 24px 24px;
   transition: all 0.2s linear;
 }
 .index-product-list .product-item .product-item-row:hover,
@@ -153,6 +140,6 @@ export default {
 .index-product-list .product-item .product-item-row:nth-child(8),
 .index-product-list .product-item .product-item-row:nth-child(9),
 .index-product-list .product-item .product-item-row:nth-child(10) {
-  margin-bottom: 0;
+  margin-top: 0;
 }
 </style>

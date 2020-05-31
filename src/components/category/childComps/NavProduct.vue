@@ -7,7 +7,11 @@
         v-for="(list, index) in navProductList"
         :key="index"
       >
-        <a class="row-a" :href="/product/ + list.spu_id">
+        <a
+          class="row-a"
+          href="javaScript:;"
+          @click="$router.push(`/product/${list.spu_id}`)"
+        >
           <img :src="list.imgurl" alt="" />
           {{ list.title }}
         </a>
@@ -24,9 +28,9 @@ export default {
       type: Array,
       default() {
         return [];
-      }
-    }
-  }
+      },
+    },
+  },
 };
 </script>
 

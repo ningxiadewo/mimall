@@ -54,3 +54,7 @@ input {
   background: none;
   border: 0 none;
 }
+/* 改变浏览器自带的自动填充样式 */
+input:-internal-autofill-selected {
+  box-shadow: 0 0 0 1000px white inset;
+}

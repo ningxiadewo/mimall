@@ -12,84 +12,101 @@ const Cart = () => import("views/cart/Cart.vue");
 const Register = () => import("views/register/Register.vue");
 const Order = () => import("views/order/Order.vue");
 const Search = () => import("views/search/Search.vue");
+const Profile = () => import("views/profile/Profile.vue");
 
 const routes = [
   {
-    path: "",
-    redirect: "/index"
-  },
-  {
-    path: "/index",
+    path: "/",
     name: "index",
-    component: Index
+    component: Index,
+    meta: {
+      title: "首页",
+    },
   },
+  // {
+  //   path: "/index",
+  //   name: "index",
+  //   component: Index,
+  // },
   {
     path: "/login",
     name: "login",
-    component: Login
+    component: Login,
   },
   {
     path: "/product/:id",
     name: "product",
-    component: Product
+    component: Product,
   },
   {
     path: "/cart",
     name: "cart",
     component: Cart,
     meta: {
-      requiresAuth: true
-    }
+      requiresAuth: true,
+    },
   },
   {
     path: "/register",
     name: "register",
-    component: Register
+    component: Register,
   },
   {
     path: "/order",
     name: "order",
     component: Order,
     meta: {
-      requiresAuth: true
-    }
+      requiresAuth: true,
+    },
   },
   {
-    path: "/search/:searchText",
+    path: "/profile",
+    name: "profile",
+    component: Profile,
+    meta: {
+      requiresAuth: true,
+    },
+  },
+  {
+    path: "/search/:searchId",
     name: "search",
-    component: Search
-  }
+    component: Search,
+  },
 ];
 
 const router = new VueRouter({
   routes,
-  mode: "history"
+  mode: "history",
 });
 
 router.beforeEach((to, from, next) => {
   let token = window.localStorage.getItem("token");
   if (to.meta.requiresAuth) {
+    // 该网页必须登录
     if (token) {
+      // 已经登录
       store.state.userInfo = JSON.parse(
         window.localStorage.getItem("userInfo")
       );
+      store.state.cartCount = window.localStorage.getItem("cartCount");
       next();
+      // console.log('token')
     } else {
-      next({
-        path: "/login"
-        // query: { redirect: to.fullPath }
-      });
-      next();
+      next("/login");
     }
   } else {
+    // if (to.meta.title) {
+    //   document.title = to.meta.title;
+    // }
+    // 不要求登录可请求网页
     if (token) {
+      // 已经登录
       store.state.userInfo = JSON.parse(
         window.localStorage.getItem("userInfo")
       );
-      next();
-    } else {
-      next();
+      store.state.cartCount = window.localStorage.getItem("cartCount");
     }
+    next();
   }
 });
 

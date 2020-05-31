@@ -8,7 +8,7 @@
     >
       <swiper
         :options="swiperOption"
-        v-if="swiperSlides.length"
+        v-if="swiperSlides.length>0"
         ref="swiperBox"
       >
         <swiper-slide v-for="(item, index) in swiperSlides" :key="index">
@@ -34,8 +34,8 @@ export default {
       type: Array,
       default() {
         return [];
-      }
-    }
+      },
+    },
   },
   data() {
     return {
@@ -46,24 +46,24 @@ export default {
         autoplay: true,
         pagination: {
           el: ".swiper-pagination",
-          clickable: true
+          clickable: true,
         },
         navigation: {
           nextEl: ".swiper-button-next",
-          prevEl: ".swiper-button-prev"
-        }
-      }
+          prevEl: ".swiper-button-prev",
+        },
+      },
     };
   },
   computed: {
     swiperBox() {
       return this.$refs.swiperBox.swiper;
-    }
+    },
   },
   components: {
     swiper,
-    swiperSlide
-  }
+    swiperSlide,
+  },
 };
 </script>
 
